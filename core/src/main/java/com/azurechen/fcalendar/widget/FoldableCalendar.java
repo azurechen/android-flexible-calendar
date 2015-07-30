@@ -35,7 +35,6 @@ public class FoldableCalendar extends RelativeLayout {
     private ImageButton mBtnPrevMonth;
     private ImageButton mBtnNextMonth;
 
-    private Calendar mCal;
     private CalendarAdapter mAdapter;
 
     private OnItemClickListener mListener;
@@ -94,19 +93,21 @@ public class FoldableCalendar extends RelativeLayout {
     }
 
     private void prevMonth() {
-        if(mCal.get(Calendar.MONTH) == mCal.getActualMinimum(Calendar.MONTH)) {
-            mCal.set((mCal.get(Calendar.YEAR) - 1), mCal.getActualMaximum(Calendar.MONTH), 1);
+        Calendar cal = mAdapter.getCalendar();
+        if(cal.get(Calendar.MONTH) == cal.getActualMinimum(Calendar.MONTH)) {
+            cal.set((cal.get(Calendar.YEAR) - 1), cal.getActualMaximum(Calendar.MONTH), 1);
         } else {
-            mCal.set(Calendar.MONTH, mCal.get(Calendar.MONTH) - 1);
+            cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) - 1);
         }
         reload();
     }
 
     private void nextMonth() {
-        if(mCal.get(Calendar.MONTH) == mCal.getActualMaximum(Calendar.MONTH)) {
-            mCal.set((mCal.get(Calendar.YEAR)+1), mCal.getActualMinimum(Calendar.MONTH),1);
+        Calendar cal = mAdapter.getCalendar();
+        if(cal.get(Calendar.MONTH) == cal.getActualMaximum(Calendar.MONTH)) {
+            cal.set((cal.get(Calendar.YEAR)+1), cal.getActualMinimum(Calendar.MONTH),1);
         } else {
-            mCal.set(Calendar.MONTH, mCal.get(Calendar.MONTH) + 1);
+            cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
         }
         reload();
     }
@@ -152,8 +153,8 @@ public class FoldableCalendar extends RelativeLayout {
 
         // reset UI
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy");
-        dateFormat.setTimeZone(mCal.getTimeZone());
-        mTxtTitle.setText(dateFormat.format(mCal.getTime()));
+        dateFormat.setTimeZone(mAdapter.getCalendar().getTimeZone());
+        mTxtTitle.setText(dateFormat.format(mAdapter.getCalendar().getTime()));
         mTableBody.removeAllViews();
 
         initHighlight();
@@ -217,7 +218,6 @@ public class FoldableCalendar extends RelativeLayout {
     // public methods
     public void setAdapter(CalendarAdapter adapter) {
         mAdapter = adapter;
-        mCal = adapter.getCalendar();
         adapter.setFirstDayOfWeek(DEFAULT_FIRST_DAY_OF_WEEK);
 
         reload();
