@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.azurechen.fcalendar.R;
@@ -19,7 +20,8 @@ public class CalendarAdapter extends BaseAdapter {
 	private Calendar mCal;
 	private LayoutInflater mInflater;
 	
-	ArrayList<Day> dayList = new ArrayList<>();
+	ArrayList<Day> mDayList = new ArrayList<>();
+	ArrayList<Event> mEventList = new ArrayList<>();
 	
 	public CalendarAdapter(Context context, Calendar cal){
 		this.mCal = cal;
@@ -32,12 +34,12 @@ public class CalendarAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return dayList.size();
+		return mDayList.size();
 	}
 
 	@Override
 	public Day getItem(int position) {
-		return dayList.get(position);
+		return mDayList.get(position);
 	}
 
 	@Override
@@ -50,7 +52,7 @@ public class CalendarAdapter extends BaseAdapter {
 		View view;
 
 
-		view = dayList.get(position).getView();
+		view = mDayList.get(position).getView();
 
 		return view;
 	}
@@ -58,10 +60,14 @@ public class CalendarAdapter extends BaseAdapter {
 	public Calendar getCalendar() {
 		return mCal;
 	}
+
+	public void addEvent(Event event) {
+		mEventList.add(event);
+	}
 	
 	public void refresh() {
     	// clear data
-    	dayList.clear();
+    	mDayList.clear();
 
 		// set calendar
 		int year = mCal.get(Calendar.YEAR);
@@ -112,14 +118,24 @@ public class CalendarAdapter extends BaseAdapter {
 
 			View view = mInflater.inflate(R.layout.layout_day, null);
 			TextView txtDay = (TextView) view.findViewById(R.id.txt_day);
-			txtDay.setText(String.valueOf(day.getDay()));
+			ImageView imgEventTag = (ImageView) view.findViewById(R.id.img_event_tag);
 
+			txtDay.setText(String.valueOf(day.getDay()));
 			if (day.getMonth() != mCal.get(Calendar.MONTH)) {
 				txtDay.setAlpha(0.3f);
 			}
-			day.setView(view);
 
-			dayList.add(day);
+			for (int j = 0; j < mEventList.size(); j++) {
+				Event event = mEventList.get(j);
+				if (day.getYear() == event.getYear()
+						&& day.getMonth() == event.getMonth()
+						&& day.getDay() == event.getDay()) {
+					imgEventTag.setVisibility(View.VISIBLE);
+				}
+			}
+
+			day.setView(view);
+			mDayList.add(day);
 		}
     }
 	

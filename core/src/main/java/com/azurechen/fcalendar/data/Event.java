@@ -1,16 +1,12 @@
 package com.azurechen.fcalendar.data;
 
-import android.view.View;
+public class Event {
 
-public class Day {
-	
 	private int mYear;
 	private int mMonth;
 	private int mDay;
 
-	private View mView;
-	
-	public Day(int year, int month, int day){
+	public Event(int year, int month, int day){
 		this.mYear = year;
 		this.mMonth = month;
 		this.mDay = day;
@@ -26,14 +22,6 @@ public class Day {
 	
 	public int getDay(){
 		return mDay;
-	}
-
-	public void setView(View view) {
-		mView = view;
-	}
-
-	public View getView() {
-		return mView;
 	}
 
 }

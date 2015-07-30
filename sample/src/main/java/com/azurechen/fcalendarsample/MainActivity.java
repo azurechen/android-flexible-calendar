@@ -29,5 +29,8 @@ public class MainActivity extends Activity {
                 Log.i(getClass().getName(), d.getYear() + "/" + d.getMonth() + "/" + d.getDay());
             }
         });
+        viewCalendar.addEventTag(2015, 6, 10);
+        viewCalendar.addEventTag(2015, 6, 22);
+        viewCalendar.addEventTag(2015, 6, 27);
     }
 }

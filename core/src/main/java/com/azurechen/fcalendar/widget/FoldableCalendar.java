@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.azurechen.fcalendar.R;
 import com.azurechen.fcalendar.data.CalendarAdapter;
 import com.azurechen.fcalendar.data.Day;
+import com.azurechen.fcalendar.data.Event;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -39,7 +40,6 @@ public class FoldableCalendar extends RelativeLayout {
 
     private int mDefaultColor;
     private int mPrimaryColor;
-    private Day mSelectedDay = null;
     private int mFirstDayOfWeek = 0;
 
     public FoldableCalendar(Context context) {
@@ -98,7 +98,7 @@ public class FoldableCalendar extends RelativeLayout {
         } else {
             mCal.set(Calendar.MONTH, mCal.get(Calendar.MONTH) - 1);
         }
-        refresh();
+        reload();
     }
 
     private void nextMonth() {
@@ -107,7 +107,7 @@ public class FoldableCalendar extends RelativeLayout {
         } else {
             mCal.set(Calendar.MONTH, mCal.get(Calendar.MONTH) + 1);
         }
-        refresh();
+        reload();
     }
 
     private void initHighlight() {
@@ -145,7 +145,7 @@ public class FoldableCalendar extends RelativeLayout {
         }
     }
 
-    private void refresh() {
+    private void reload() {
         mAdapter.refresh();
         mAdapter.notifyDataSetChanged();
 
@@ -218,7 +218,12 @@ public class FoldableCalendar extends RelativeLayout {
         mAdapter = adapter;
         mCal = adapter.getCalendar();
 
-        refresh();
+        reload();
+    }
+
+    public void addEventTag(int numYear, int numMonth, int numDay) {
+        mAdapter.addEvent(new Event(numYear, numMonth, numDay));
+        reload();
     }
 
     // callback
