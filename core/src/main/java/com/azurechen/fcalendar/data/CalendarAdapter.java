@@ -32,16 +32,12 @@ public class CalendarAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return dayList.size() + 7;
+		return dayList.size();
 	}
 
 	@Override
 	public Day getItem(int position) {
-		if (position >= 7) {
-			return dayList.get(position - 7);
-		} else {
-			return null;
-		}
+		return dayList.get(position);
 	}
 
 	@Override
@@ -54,23 +50,7 @@ public class CalendarAdapter extends BaseAdapter {
 		View view;
 
 
-		if (position >= 0 && position < 7) {
-			view = mInflater.inflate(R.layout.layout_day_of_week, null);
-			TextView txtDayOfWeek = (TextView) view.findViewById(R.id.txt_day_of_week);
-
-			int[] dayOfWeekIds = {
-					R.string.sunday,
-					R.string.monday,
-					R.string.tuesday,
-					R.string.wednesday,
-					R.string.thursday,
-					R.string.friday,
-					R.string.saturday
-			};
-			txtDayOfWeek.setText(dayOfWeekIds[(position + mFirstDayOfWeek) % 7]);
-		} else {
-			view = dayList.get(position - 7).getView();
-		}
+		view = dayList.get(position).getView();
 
 		return view;
 	}

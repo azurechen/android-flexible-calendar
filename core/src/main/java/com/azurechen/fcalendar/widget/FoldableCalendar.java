@@ -25,6 +25,7 @@ import java.util.Calendar;
 public class FoldableCalendar extends RelativeLayout {
 
     private Context mContext;
+    private LayoutInflater mInflater;
 
     private TextView mTxtTitle;
     private TableLayout mTableBody;
@@ -38,6 +39,8 @@ public class FoldableCalendar extends RelativeLayout {
 
     private int mDefaultColor;
     private int mPrimaryColor;
+    private Day mSelectedDay = null;
+    private int mFirstDayOfWeek = 0;
 
     public FoldableCalendar(Context context) {
         super(context);
@@ -56,6 +59,7 @@ public class FoldableCalendar extends RelativeLayout {
 
     private void init(Context context) {
         mContext = context;
+        mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         // load rootView from xml
         LayoutInflater vi =
@@ -106,9 +110,9 @@ public class FoldableCalendar extends RelativeLayout {
         refresh();
     }
 
-    private void highlight() {
+    private void initHighlight() {
         // reset other items
-        for (int i = 7; i < mAdapter.getCount(); i++) {
+        for (int i = 0; i < mAdapter.getCount(); i++) {
             Day day = mAdapter.getItem(i);
             View view = day.getView();
             TextView txtDay = (TextView) view.findViewById(R.id.txt_day);
@@ -128,7 +132,8 @@ public class FoldableCalendar extends RelativeLayout {
     }
 
     private void highlight(View v, int position) {
-        highlight();
+        initHighlight();
+
 
         // set the color of item
         TextView txtDay = (TextView) v.findViewById(R.id.txt_day);
@@ -150,10 +155,37 @@ public class FoldableCalendar extends RelativeLayout {
         mTxtTitle.setText(dateFormat.format(mCal.getTime()));
         mTableBody.removeAllViews();
 
-        highlight();
+        initHighlight();
+
+        TableRow rowCurrent = null;
+
+        // set day of week
+        int[] dayOfWeekIds = {
+                R.string.sunday,
+                R.string.monday,
+                R.string.tuesday,
+                R.string.wednesday,
+                R.string.thursday,
+                R.string.friday,
+                R.string.saturday
+        };
+        rowCurrent = new TableRow(mContext);
+        rowCurrent.setLayoutParams(new TableLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+        for (int i = 0; i < 7; i++) {
+            View view = mInflater.inflate(R.layout.layout_day_of_week, null);
+            TextView txtDayOfWeek = (TextView) view.findViewById(R.id.txt_day_of_week);
+            txtDayOfWeek.setText(dayOfWeekIds[(i + mFirstDayOfWeek) % 7]);
+            view.setLayoutParams(new TableRow.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1));
+            rowCurrent.addView(view);
+        }
+        mTableBody.addView(rowCurrent);
 
         // set day view
-        TableRow rowCurrent = null;
         for (int i = 0; i < mAdapter.getCount(); i ++) {
             final int position = i;
 
@@ -164,22 +196,20 @@ public class FoldableCalendar extends RelativeLayout {
                         ViewGroup.LayoutParams.WRAP_CONTENT));
                 mTableBody.addView(rowCurrent);
             }
-            if (rowCurrent != null) {
-                final View item = mAdapter.getView(position, null, rowCurrent);
-                item.setLayoutParams(new TableRow.LayoutParams(
-                        0,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        1));
-                if (position >= 7) {
-                    item.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            highlight(v, position);
-                        }
-                    });
-                }
-                rowCurrent.addView(item);
+            final View item = mAdapter.getView(position, null, rowCurrent);
+            item.setLayoutParams(new TableRow.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1));
+            if (position >= 7) {
+                item.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        highlight(v, position);
+                    }
+                });
             }
+            rowCurrent.addView(item);
         }
     }
 
