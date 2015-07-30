@@ -33,8 +33,12 @@ public class CalendarAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public Object getItem(int position) {
-		return dayList.get(position);
+	public Day getItem(int position) {
+		if (position >= 7) {
+			return dayList.get(position - 7);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -68,6 +72,10 @@ public class CalendarAdapter extends BaseAdapter {
 
 			Day day = dayList.get(position - 7);
 			txtDay.setText(String.valueOf(day.getDay()));
+
+			if (day.getMonth() != mCal.get(Calendar.MONTH)) {
+				txtDay.setAlpha(0.3f);
+			}
 		}
 
 		return view;

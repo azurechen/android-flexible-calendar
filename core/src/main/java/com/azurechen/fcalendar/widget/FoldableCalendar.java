@@ -1,6 +1,7 @@
 package com.azurechen.fcalendar.widget;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import com.azurechen.fcalendar.R;
 import com.azurechen.fcalendar.data.CalendarAdapter;
+import com.azurechen.fcalendar.data.Day;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -31,6 +33,11 @@ public class FoldableCalendar extends RelativeLayout {
 
     private Calendar mCal;
     private CalendarAdapter mAdapter;
+
+    private OnItemClickListener mListener;
+
+    private int mDefaultColor;
+    private int mPrimaryColor;
 
     public FoldableCalendar(Context context) {
         super(context);
@@ -60,6 +67,10 @@ public class FoldableCalendar extends RelativeLayout {
         mTableBody = (TableLayout) rootView.findViewById(R.id.table_body);
         mBtnPrevMonth = (ImageButton) rootView.findViewById(R.id.btn_prev_month);
         mBtnNextMonth = (ImageButton) rootView.findViewById(R.id.btn_next_month);
+
+        // init default attrs
+        mPrimaryColor = context.getResources().getColor(R.color.primary_pink);
+        mDefaultColor = Color.WHITE;
 
         // bind events
         mBtnPrevMonth.setOnClickListener(new OnClickListener() {
@@ -105,10 +116,12 @@ public class FoldableCalendar extends RelativeLayout {
         mTxtTitle.setText(dateFormat.format(mCal.getTime()));
         mTableBody.removeAllViews();
 
+        // set day view
         TableRow rowCurrent = null;
         for (int i = 0; i < mAdapter.getCount(); i ++) {
+            final int position = i;
 
-            if (i % 7 == 0) {
+            if (position % 7 == 0) {
                 rowCurrent = new TableRow(mContext);
                 rowCurrent.setLayoutParams(new TableLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -116,11 +129,37 @@ public class FoldableCalendar extends RelativeLayout {
                 mTableBody.addView(rowCurrent);
             }
             if (rowCurrent != null) {
-                View item = mAdapter.getView(i, null, rowCurrent);
+                final View item = mAdapter.getView(position, null, rowCurrent);
                 item.setLayoutParams(new TableRow.LayoutParams(
                         0,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         1));
+                if (position >= 7) {
+                    item.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // reset other items
+                            for (int y = 1; y < mTableBody.getChildCount(); y++) {
+                                TableRow row = (TableRow) mTableBody.getChildAt(y);
+                                for (int x = 0; x < row.getChildCount(); x++) {
+                                    View tempItem = row.getChildAt(x);
+                                    TextView txtDay = (TextView) tempItem.findViewById(R.id.txt_day);
+                                    txtDay.setBackgroundResource(Color.TRANSPARENT);
+                                    txtDay.setTextColor(mDefaultColor);
+                                }
+                            }
+
+                            // set the color of item
+                            TextView txtDay = (TextView) item.findViewById(R.id.txt_day);
+                            txtDay.setBackgroundResource(R.drawable.circle_white_background);
+                            txtDay.setTextColor(mPrimaryColor);
+
+                            if (mListener != null) {
+                                mListener.onClick(item, mAdapter.getItem(position));
+                            }
+                        }
+                    });
+                }
                 rowCurrent.addView(item);
             }
         }
@@ -132,5 +171,13 @@ public class FoldableCalendar extends RelativeLayout {
         mCal = adapter.getCalendar();
 
         refresh();
+    }
+
+    // callback
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
+    }
+    public interface OnItemClickListener {
+        void onClick(View v, Day d);
     }
 }
