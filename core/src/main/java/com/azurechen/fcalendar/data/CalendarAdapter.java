@@ -72,6 +72,10 @@ public class CalendarAdapter extends BaseAdapter {
 
 		return view;
 	}
+
+	public Calendar getCalendar() {
+		return mCal;
+	}
 	
 	public void refresh() {
     	// clear data

@@ -2,7 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@color/primary_pink">
 
@@ -22,6 +22,7 @@
             android:src="@mipmap/ic_chevron_left" />
 
         <TextView
+            android:id="@+id/txt_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -43,12 +44,11 @@
 
     </RelativeLayout>
 
-    <GridView
-        android:id="@+id/gridview_body"
+    <TableLayout
+        android:id="@+id/table_body"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:numColumns="7">
+        android:layout_height="wrap_content">
 
-    </GridView>
+    </TableLayout>
 
 </LinearLayout>

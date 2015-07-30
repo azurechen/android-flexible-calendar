@@ -4,14 +4,17 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 import com.azurechen.fcalendar.R;
 import com.azurechen.fcalendar.data.CalendarAdapter;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
@@ -19,12 +22,15 @@ import java.util.Calendar;
  */
 public class FoldableCalendar extends RelativeLayout {
 
-    private GridView gridviewBody;
-    private ImageButton btnPrevMonth;
-    private ImageButton btnNextMonth;
+    private Context mContext;
 
-    private Calendar cal;
-    private CalendarAdapter adapter;
+    private TextView mTxtTitle;
+    private TableLayout mTableBody;
+    private ImageButton mBtnPrevMonth;
+    private ImageButton mBtnNextMonth;
+
+    private Calendar mCal;
+    private CalendarAdapter mAdapter;
 
     public FoldableCalendar(Context context) {
         super(context);
@@ -42,40 +48,28 @@ public class FoldableCalendar extends RelativeLayout {
     }
 
     private void init(Context context) {
+        mContext = context;
+
         // load rootView from xml
         LayoutInflater vi =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rootView = vi.inflate(R.layout.widget_foldable_calendar, this, true);
 
         // init UI
-        gridviewBody = (GridView) rootView.findViewById(R.id.gridview_body);
-        btnPrevMonth = (ImageButton) rootView.findViewById(R.id.btn_prev_month);
-        btnNextMonth = (ImageButton) rootView.findViewById(R.id.btn_next_month);
-
-        // init calendar
-        cal = Calendar.getInstance();
-
-        // set calendar view
-        gridviewBody.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
-        gridviewBody.setDrawSelectorOnTop(true);
-        gridviewBody.setSelector(android.R.color.transparent);
-        adapter = new CalendarAdapter(context, cal);
-        gridviewBody.setAdapter(adapter);
-        gridviewBody.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            }
-        });
+        mTxtTitle = (TextView) rootView.findViewById(R.id.txt_title);
+        mTableBody = (TableLayout) rootView.findViewById(R.id.table_body);
+        mBtnPrevMonth = (ImageButton) rootView.findViewById(R.id.btn_prev_month);
+        mBtnNextMonth = (ImageButton) rootView.findViewById(R.id.btn_next_month);
 
         // bind events
-        btnPrevMonth.setOnClickListener(new OnClickListener() {
+        mBtnPrevMonth.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 prevMonth();
             }
         });
 
-        btnNextMonth.setOnClickListener(new OnClickListener() {
+        mBtnNextMonth.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 nextMonth();
@@ -83,26 +77,60 @@ public class FoldableCalendar extends RelativeLayout {
         });
     }
 
-    private void prevMonth(){
-        if(cal.get(Calendar.MONTH) == cal.getActualMinimum(Calendar.MONTH)) {
-            cal.set((cal.get(Calendar.YEAR) - 1), cal.getActualMaximum(Calendar.MONTH), 1);
+    private void prevMonth() {
+        if(mCal.get(Calendar.MONTH) == mCal.getActualMinimum(Calendar.MONTH)) {
+            mCal.set((mCal.get(Calendar.YEAR) - 1), mCal.getActualMaximum(Calendar.MONTH), 1);
         } else {
-            cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) - 1);
+            mCal.set(Calendar.MONTH, mCal.get(Calendar.MONTH) - 1);
         }
         refresh();
     }
 
-    private void nextMonth(){
-        if(cal.get(Calendar.MONTH) == cal.getActualMaximum(Calendar.MONTH)) {
-            cal.set((cal.get(Calendar.YEAR)+1),cal.getActualMinimum(Calendar.MONTH),1);
+    private void nextMonth() {
+        if(mCal.get(Calendar.MONTH) == mCal.getActualMaximum(Calendar.MONTH)) {
+            mCal.set((mCal.get(Calendar.YEAR)+1), mCal.getActualMinimum(Calendar.MONTH),1);
         } else {
-            cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
+            mCal.set(Calendar.MONTH, mCal.get(Calendar.MONTH) + 1);
         }
         refresh();
     }
 
-    private void refresh(){
-        adapter.refresh();
-        adapter.notifyDataSetChanged();
+    private void refresh() {
+        mAdapter.refresh();
+        mAdapter.notifyDataSetChanged();
+
+        // reset UI
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy");
+        dateFormat.setTimeZone(mCal.getTimeZone());
+        mTxtTitle.setText(dateFormat.format(mCal.getTime()));
+        mTableBody.removeAllViews();
+
+        TableRow rowCurrent = null;
+        for (int i = 0; i < mAdapter.getCount(); i ++) {
+
+            if (i % 7 == 0) {
+                rowCurrent = new TableRow(mContext);
+                rowCurrent.setLayoutParams(new TableLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
+                mTableBody.addView(rowCurrent);
+            }
+            if (rowCurrent != null) {
+                View item = mAdapter.getView(i, null, rowCurrent);
+                item.setLayoutParams(new TableRow.LayoutParams(
+                        0,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        1));
+                rowCurrent.addView(item);
+            }
+        }
+    }
+
+    // public methods
+    public void setAdapter(CalendarAdapter adapter) {
+        mAdapter = adapter;
+        mCal = adapter.getCalendar();
+
+        refresh();
     }
 }
