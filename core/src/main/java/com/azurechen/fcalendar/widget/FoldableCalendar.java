@@ -25,6 +25,8 @@ import java.util.Calendar;
  */
 public class FoldableCalendar extends RelativeLayout {
 
+    private static final int DEFAULT_FIRST_DAY_OF_WEEK = 0;
+
     private Context mContext;
     private LayoutInflater mInflater;
 
@@ -40,7 +42,6 @@ public class FoldableCalendar extends RelativeLayout {
 
     private int mDefaultColor;
     private int mPrimaryColor;
-    private int mFirstDayOfWeek = 0;
 
     public FoldableCalendar(Context context) {
         super(context);
@@ -176,7 +177,7 @@ public class FoldableCalendar extends RelativeLayout {
         for (int i = 0; i < 7; i++) {
             View view = mInflater.inflate(R.layout.layout_day_of_week, null);
             TextView txtDayOfWeek = (TextView) view.findViewById(R.id.txt_day_of_week);
-            txtDayOfWeek.setText(dayOfWeekIds[(i + mFirstDayOfWeek) % 7]);
+            txtDayOfWeek.setText(dayOfWeekIds[(i + mAdapter.getFirstDayOfWeek()) % 7]);
             view.setLayoutParams(new TableRow.LayoutParams(
                     0,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -217,6 +218,7 @@ public class FoldableCalendar extends RelativeLayout {
     public void setAdapter(CalendarAdapter adapter) {
         mAdapter = adapter;
         mCal = adapter.getCalendar();
+        adapter.setFirstDayOfWeek(DEFAULT_FIRST_DAY_OF_WEEK);
 
         reload();
     }
