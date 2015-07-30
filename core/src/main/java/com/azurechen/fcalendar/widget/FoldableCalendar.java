@@ -106,6 +106,40 @@ public class FoldableCalendar extends RelativeLayout {
         refresh();
     }
 
+    private void highlight() {
+        // reset other items
+        for (int i = 7; i < mAdapter.getCount(); i++) {
+            Day day = mAdapter.getItem(i);
+            View view = day.getView();
+            TextView txtDay = (TextView) view.findViewById(R.id.txt_day);
+            txtDay.setBackgroundResource(Color.TRANSPARENT);
+            txtDay.setTextColor(mDefaultColor);
+
+            // is today?
+            Calendar todayCal = Calendar.getInstance();
+            if (day.getYear() == todayCal.get(Calendar.YEAR)
+                    && day.getMonth() == todayCal.get(Calendar.MONTH)
+                    && day.getDay() == todayCal.get(Calendar.DAY_OF_MONTH)) {
+
+                txtDay.setBackgroundResource(R.drawable.circle_white_stroke_background);
+                txtDay.setTextColor(mDefaultColor);
+            }
+        }
+    }
+
+    private void highlight(View v, int position) {
+        highlight();
+
+        // set the color of item
+        TextView txtDay = (TextView) v.findViewById(R.id.txt_day);
+        txtDay.setBackgroundResource(R.drawable.circle_white_solid_background);
+        txtDay.setTextColor(mPrimaryColor);
+
+        if (mListener != null) {
+            mListener.onClick(v, mAdapter.getItem(position));
+        }
+    }
+
     private void refresh() {
         mAdapter.refresh();
         mAdapter.notifyDataSetChanged();
@@ -115,6 +149,8 @@ public class FoldableCalendar extends RelativeLayout {
         dateFormat.setTimeZone(mCal.getTimeZone());
         mTxtTitle.setText(dateFormat.format(mCal.getTime()));
         mTableBody.removeAllViews();
+
+        highlight();
 
         // set day view
         TableRow rowCurrent = null;
@@ -138,25 +174,7 @@ public class FoldableCalendar extends RelativeLayout {
                     item.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            // reset other items
-                            for (int y = 1; y < mTableBody.getChildCount(); y++) {
-                                TableRow row = (TableRow) mTableBody.getChildAt(y);
-                                for (int x = 0; x < row.getChildCount(); x++) {
-                                    View tempItem = row.getChildAt(x);
-                                    TextView txtDay = (TextView) tempItem.findViewById(R.id.txt_day);
-                                    txtDay.setBackgroundResource(Color.TRANSPARENT);
-                                    txtDay.setTextColor(mDefaultColor);
-                                }
-                            }
-
-                            // set the color of item
-                            TextView txtDay = (TextView) item.findViewById(R.id.txt_day);
-                            txtDay.setBackgroundResource(R.drawable.circle_white_background);
-                            txtDay.setTextColor(mPrimaryColor);
-
-                            if (mListener != null) {
-                                mListener.onClick(item, mAdapter.getItem(position));
-                            }
+                            highlight(v, position);
                         }
                     });
                 }

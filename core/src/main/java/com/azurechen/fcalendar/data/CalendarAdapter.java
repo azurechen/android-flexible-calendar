@@ -17,12 +17,15 @@ public class CalendarAdapter extends BaseAdapter {
 	private int mFirstDayOfWeek = 0;
 	private Context mContext;
 	private Calendar mCal;
+	private LayoutInflater mInflater;
 	
 	ArrayList<Day> dayList = new ArrayList<>();
 	
 	public CalendarAdapter(Context context, Calendar cal){
 		this.mCal = cal;
 		this.mContext = context;
+
+		mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		refresh();
 	}
@@ -49,11 +52,10 @@ public class CalendarAdapter extends BaseAdapter {
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		View view;
-		LayoutInflater vi =
-				(LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
 
 		if (position >= 0 && position < 7) {
-			view = vi.inflate(R.layout.layout_day_of_week, null);
+			view = mInflater.inflate(R.layout.layout_day_of_week, null);
 			TextView txtDayOfWeek = (TextView) view.findViewById(R.id.txt_day_of_week);
 
 			int[] dayOfWeekIds = {
@@ -67,15 +69,7 @@ public class CalendarAdapter extends BaseAdapter {
 			};
 			txtDayOfWeek.setText(dayOfWeekIds[(position + mFirstDayOfWeek) % 7]);
 		} else {
-			view = vi.inflate(R.layout.layout_day, null);
-			TextView txtDay = (TextView) view.findViewById(R.id.txt_day);
-
-			Day day = dayList.get(position - 7);
-			txtDay.setText(String.valueOf(day.getDay()));
-
-			if (day.getMonth() != mCal.get(Calendar.MONTH)) {
-				txtDay.setAlpha(0.3f);
-			}
+			view = dayList.get(position - 7).getView();
 		}
 
 		return view;
@@ -133,7 +127,19 @@ public class CalendarAdapter extends BaseAdapter {
 				numMonth = month;
 				numDay = i;
 			}
-			dayList.add(new Day(numYear, numMonth, numDay));
+
+			Day day = new Day(numYear, numMonth, numDay);
+
+			View view = mInflater.inflate(R.layout.layout_day, null);
+			TextView txtDay = (TextView) view.findViewById(R.id.txt_day);
+			txtDay.setText(String.valueOf(day.getDay()));
+
+			if (day.getMonth() != mCal.get(Calendar.MONTH)) {
+				txtDay.setAlpha(0.3f);
+			}
+			day.setView(view);
+
+			dayList.add(day);
 		}
     }
 	
