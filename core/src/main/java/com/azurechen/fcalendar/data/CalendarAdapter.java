@@ -3,8 +3,6 @@ package com.azurechen.fcalendar.data;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,10 +11,9 @@ import com.azurechen.fcalendar.R;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class CalendarAdapter extends BaseAdapter {
+public class CalendarAdapter {
 
 	private int mFirstDayOfWeek = 0;
-	private Context mContext;
 	private Calendar mCal;
 	private LayoutInflater mInflater;
 	
@@ -25,36 +22,22 @@ public class CalendarAdapter extends BaseAdapter {
 	
 	public CalendarAdapter(Context context, Calendar cal){
 		this.mCal = cal;
-		this.mContext = context;
 
-		mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 		refresh();
 	}
 
-	@Override
 	public int getCount() {
 		return mDayList.size();
 	}
 
-	@Override
 	public Day getItem(int position) {
 		return mDayList.get(position);
 	}
 
-	@Override
-	public long getItemId(int position) {
-		return 0;
-	}
-
-	@Override
-	public View getView(final int position, View convertView, ViewGroup parent) {
-		View view;
-
-
-		view = mDayList.get(position).getView();
-
-		return view;
+	public View getView(final int position) {
+		return mDayList.get(position).getView();
 	}
 
 

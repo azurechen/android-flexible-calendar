@@ -116,7 +116,7 @@ public class FoldableCalendar extends RelativeLayout {
         // reset other items
         for (int i = 0; i < mAdapter.getCount(); i++) {
             Day day = mAdapter.getItem(i);
-            View view = day.getView();
+            View view = mAdapter.getView(i);
             TextView txtDay = (TextView) view.findViewById(R.id.txt_day);
             txtDay.setBackgroundResource(Color.TRANSPARENT);
             txtDay.setTextColor(mDefaultColor);
@@ -149,7 +149,6 @@ public class FoldableCalendar extends RelativeLayout {
 
     private void reload() {
         mAdapter.refresh();
-        mAdapter.notifyDataSetChanged();
 
         // reset UI
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy");
@@ -198,7 +197,7 @@ public class FoldableCalendar extends RelativeLayout {
                         ViewGroup.LayoutParams.WRAP_CONTENT));
                 mTableBody.addView(rowCurrent);
             }
-            final View item = mAdapter.getView(position, null, rowCurrent);
+            final View item = mAdapter.getView(position);
             item.setLayoutParams(new TableRow.LayoutParams(
                     0,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -225,6 +224,7 @@ public class FoldableCalendar extends RelativeLayout {
 
     public void addEventTag(int numYear, int numMonth, int numDay) {
         mAdapter.addEvent(new Event(numYear, numMonth, numDay));
+
         reload();
     }
 
