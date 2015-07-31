@@ -15,7 +15,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.azurechen.fcalendar.R;
-import com.azurechen.fcalendar.View.LockScrollView;
+import com.azurechen.fcalendar.view.LockScrollView;
 import com.azurechen.fcalendar.data.CalendarAdapter;
 import com.azurechen.fcalendar.data.Day;
 import com.azurechen.fcalendar.data.Event;

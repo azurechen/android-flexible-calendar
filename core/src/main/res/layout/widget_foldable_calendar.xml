@@ -51,7 +51,7 @@
 
     </TableLayout>
 
-    <com.azurechen.fcalendar.View.LockScrollView
+    <com.azurechen.fcalendar.view.LockScrollView
         android:id="@+id/scroll_view_body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -64,6 +64,6 @@
 
         </TableLayout>
 
-    </com.azurechen.fcalendar.View.LockScrollView>
+    </com.azurechen.fcalendar.view.LockScrollView>
 
 </LinearLayout>

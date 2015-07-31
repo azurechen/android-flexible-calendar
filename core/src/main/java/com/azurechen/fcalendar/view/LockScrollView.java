@@ -1,4 +1,4 @@
-package com.azurechen.fcalendar.View;
+package com.azurechen.fcalendar.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
