@@ -45,10 +45,25 @@
     </RelativeLayout>
 
     <TableLayout
-        android:id="@+id/table_body"
+        android:id="@+id/table_head"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
     </TableLayout>
+
+    <com.azurechen.fcalendar.View.LockScrollView
+        android:id="@+id/scroll_view_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <TableLayout
+            android:id="@+id/table_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </TableLayout>
+
+    </com.azurechen.fcalendar.View.LockScrollView>
 
 </LinearLayout>

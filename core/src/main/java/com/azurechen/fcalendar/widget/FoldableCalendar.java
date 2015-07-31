@@ -6,13 +6,16 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.azurechen.fcalendar.R;
+import com.azurechen.fcalendar.View.LockScrollView;
 import com.azurechen.fcalendar.data.CalendarAdapter;
 import com.azurechen.fcalendar.data.Day;
 import com.azurechen.fcalendar.data.Event;
@@ -23,7 +26,7 @@ import java.util.Calendar;
 /**
  * Created by azurechen on 7/29/15.
  */
-public class FoldableCalendar extends RelativeLayout {
+public class FoldableCalendar extends LinearLayout {
 
     private static final int DEFAULT_FIRST_DAY_OF_WEEK = 0;
 
@@ -31,6 +34,8 @@ public class FoldableCalendar extends RelativeLayout {
     private LayoutInflater mInflater;
 
     private TextView mTxtTitle;
+    private TableLayout mTableHead;
+    private LockScrollView mScrollViewBody;
     private TableLayout mTableBody;
     private ImageButton mBtnPrevMonth;
     private ImageButton mBtnNextMonth;
@@ -38,6 +43,10 @@ public class FoldableCalendar extends RelativeLayout {
     private CalendarAdapter mAdapter;
 
     private OnItemClickListener mListener;
+
+    private enum State {COLLAPSED, EXPANDED, PROCESSING }
+    private int mInitHeight = 0;
+    private State mState = State.EXPANDED;
 
     private int mDefaultColor;
     private int mPrimaryColor;
@@ -69,6 +78,8 @@ public class FoldableCalendar extends RelativeLayout {
 
         // init UI
         mTxtTitle = (TextView) rootView.findViewById(R.id.txt_title);
+        mTableHead = (TableLayout) rootView.findViewById(R.id.table_head);
+        mScrollViewBody = (LockScrollView) rootView.findViewById(R.id.scroll_view_body);
         mTableBody = (TableLayout) rootView.findViewById(R.id.table_body);
         mBtnPrevMonth = (ImageButton) rootView.findViewById(R.id.btn_prev_month);
         mBtnNextMonth = (ImageButton) rootView.findViewById(R.id.btn_next_month);
@@ -91,6 +102,13 @@ public class FoldableCalendar extends RelativeLayout {
                 nextMonth();
             }
         });
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        mInitHeight = mTableBody.getMeasuredHeight();
     }
 
     private void prevMonth() {
@@ -122,28 +140,14 @@ public class FoldableCalendar extends RelativeLayout {
             txtDay.setBackgroundResource(Color.TRANSPARENT);
             txtDay.setTextColor(mDefaultColor);
 
-            // is today?
-            Calendar todayCal = Calendar.getInstance();
-            if (day.getYear() == todayCal.get(Calendar.YEAR)
-                    && day.getMonth() == todayCal.get(Calendar.MONTH)
-                    && day.getDay() == todayCal.get(Calendar.DAY_OF_MONTH)) {
-
+            // set today's item
+            if (isToady(day)) {
                 txtDay.setBackgroundResource(R.drawable.circle_white_stroke_background);
                 txtDay.setTextColor(mDefaultColor);
             }
-        }
 
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            Day tempDay = mAdapter.getItem(i);
-
-            if (mSelectedItem != null
-                    && tempDay.getYear() == mSelectedItem.getYear()
-                    && tempDay.getMonth() == mSelectedItem.getMonth()
-                    && tempDay.getDay() == mSelectedItem.getDay()) {
-
-                View view = mAdapter.getView(i);
-                // set the color of item
-                TextView txtDay = (TextView) view.findViewById(R.id.txt_day);
+            // set the selected item
+            if (isSelectedDay(day)) {
                 txtDay.setBackgroundResource(R.drawable.circle_white_solid_background);
                 txtDay.setTextColor(mPrimaryColor);
 
@@ -157,6 +161,22 @@ public class FoldableCalendar extends RelativeLayout {
         }
     }
 
+    private int getSuitableRowIndex() {
+        if (getSelectedItemPosition() != -1) {
+            View view = mAdapter.getView(getSelectedItemPosition());
+            TableRow row = (TableRow) view.getParent();
+
+            return mTableBody.indexOfChild(row);
+        } else if (getTodayItemPosition() != -1) {
+            View view = mAdapter.getView(getTodayItemPosition());
+            TableRow row = (TableRow) view.getParent();
+
+            return mTableBody.indexOfChild(row);
+        } else {
+            return 0;
+        }
+    }
+
     private void reload() {
         mAdapter.refresh();
 
@@ -164,6 +184,7 @@ public class FoldableCalendar extends RelativeLayout {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy");
         dateFormat.setTimeZone(mAdapter.getCalendar().getTimeZone());
         mTxtTitle.setText(dateFormat.format(mAdapter.getCalendar().getTime()));
+        mTableHead.removeAllViews();
         mTableBody.removeAllViews();
 
         TableRow rowCurrent;
@@ -192,7 +213,7 @@ public class FoldableCalendar extends RelativeLayout {
                     1));
             rowCurrent.addView(view);
         }
-        mTableBody.addView(rowCurrent);
+        mTableHead.addView(rowCurrent);
 
         // set day view
         for (int i = 0; i < mAdapter.getCount(); i ++) {
@@ -236,6 +257,112 @@ public class FoldableCalendar extends RelativeLayout {
         mAdapter.addEvent(new Event(numYear, numMonth, numDay));
 
         reload();
+    }
+
+    public boolean isSelectedDay(Day day) {
+        return day != null
+                && mSelectedItem != null
+                && day.getYear() == mSelectedItem.getYear()
+                && day.getMonth() == mSelectedItem.getMonth()
+                && day.getDay() == mSelectedItem.getDay();
+    }
+
+    public boolean isToady(Day day) {
+        Calendar todayCal = Calendar.getInstance();
+        return day != null
+                && day.getYear() == todayCal.get(Calendar.YEAR)
+                && day.getMonth() == todayCal.get(Calendar.MONTH)
+                && day.getDay() == todayCal.get(Calendar.DAY_OF_MONTH);
+    }
+
+    public int getSelectedItemPosition() {
+        int position = -1;
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            Day day = mAdapter.getItem(i);
+
+            if (isSelectedDay(day)) {
+                position = i;
+                break;
+            }
+        }
+        return position;
+    }
+
+    public int getTodayItemPosition() {
+        int position = -1;
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            Day day = mAdapter.getItem(i);
+
+            if (isToady(day)) {
+                position = i;
+                break;
+            }
+        }
+        return position;
+    }
+
+    public void collapse(int duration) {
+        if (mState == State.EXPANDED) {
+            mState = State.PROCESSING;
+
+            int index = getSuitableRowIndex();
+
+            final int currentHeight = mInitHeight;
+            final int targetHeight = mTableBody.getChildAt(index).getMeasuredHeight();
+            int tempHeight = 0;
+            for (int i = 0; i < index; i++) {
+                tempHeight += mTableBody.getChildAt(i).getMeasuredHeight();
+            }
+            final int topHeight = tempHeight;
+
+            Animation anim = new Animation() {
+                @Override
+                protected void applyTransformation(float interpolatedTime, Transformation t) {
+
+                    mScrollViewBody.getLayoutParams().height = (interpolatedTime == 1)
+                            ? targetHeight
+                            : currentHeight - (int) ((currentHeight - targetHeight) * interpolatedTime);
+                    mScrollViewBody.requestLayout();
+
+                    if (mScrollViewBody.getMeasuredHeight() < topHeight + targetHeight) {
+                        int position = topHeight + targetHeight - mScrollViewBody.getMeasuredHeight();
+                        mScrollViewBody.smoothScrollTo(0, position);
+                    }
+
+                    if (interpolatedTime == 1) {
+                        mState = State.COLLAPSED;
+                    }
+                }
+            };
+            anim.setDuration(duration);
+            startAnimation(anim);
+        }
+    }
+
+    public void expand(int duration) {
+        if (mState == State.COLLAPSED) {
+            mState = State.PROCESSING;
+
+            final int currentHeight = mScrollViewBody.getMeasuredHeight();
+            final int targetHeight = mInitHeight;
+
+            Animation anim = new Animation() {
+                @Override
+                protected void applyTransformation(float interpolatedTime, Transformation t) {
+
+                    mScrollViewBody.getLayoutParams().height = (interpolatedTime == 1)
+                            ? LinearLayout.LayoutParams.WRAP_CONTENT
+                            : currentHeight - (int) ((currentHeight - targetHeight) * interpolatedTime);
+                    mScrollViewBody.requestLayout();
+
+                    if (interpolatedTime == 1) {
+                        mState = State.EXPANDED;
+                    }
+                }
+            };
+            anim.setDuration(duration);
+            startAnimation(anim);
+        }
     }
 
     // callback

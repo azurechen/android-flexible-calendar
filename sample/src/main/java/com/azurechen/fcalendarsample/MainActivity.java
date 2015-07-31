@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import com.azurechen.fcalendar.data.CalendarAdapter;
 import com.azurechen.fcalendar.data.Day;
@@ -19,18 +20,37 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final FoldableCalendar viewCalendar = (FoldableCalendar) findViewById(R.id.calendar);
+        final Button btnCollapse = (Button) findViewById(R.id.btn_collapse);
+        final Button btnExpand = (Button) findViewById(R.id.btn_expand);
+
         // init calendar
-        FoldableCalendar viewCalendar = (FoldableCalendar) findViewById(R.id.calendar);
-        CalendarAdapter adapter = new CalendarAdapter(this, Calendar.getInstance());
+        Calendar cal = Calendar.getInstance();
+        CalendarAdapter adapter = new CalendarAdapter(this, cal);
         viewCalendar.setAdapter(adapter);
         viewCalendar.setOnItemClickListener(new FoldableCalendar.OnItemClickListener() {
             @Override
             public void onClick(View v, Day d) {
-                Log.i(getClass().getName(), d.getYear() + "/" + d.getMonth() + "/" + d.getDay());
+                Log.i(getClass().getName(), "Selected Day: "
+                        + d.getYear() + "/" + (d.getMonth() + 1) + "/" + d.getDay());
             }
         });
-        viewCalendar.addEventTag(2015, 6, 10);
-        viewCalendar.addEventTag(2015, 6, 22);
-        viewCalendar.addEventTag(2015, 6, 27);
+        viewCalendar.addEventTag(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 10);
+        viewCalendar.addEventTag(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 22);
+        viewCalendar.addEventTag(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 27);
+
+        btnCollapse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewCalendar.collapse(500);
+            }
+        });
+
+        btnExpand.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewCalendar.expand(500);
+            }
+        });
     }
 }
