@@ -28,6 +28,7 @@ public class CalendarAdapter {
 		refresh();
 	}
 
+	// public methods
 	public int getCount() {
 		return mDayList.size();
 	}
@@ -40,8 +41,6 @@ public class CalendarAdapter {
 		return mDayList.get(position).getView();
 	}
 
-
-	// public methods
 	public int getFirstDayOfWeek() {
 		return mFirstDayOfWeek;
 	}

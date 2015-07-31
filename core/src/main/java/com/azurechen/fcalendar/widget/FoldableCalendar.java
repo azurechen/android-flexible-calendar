@@ -41,6 +41,7 @@ public class FoldableCalendar extends RelativeLayout {
 
     private int mDefaultColor;
     private int mPrimaryColor;
+    private Day mSelectedItem;
 
     public FoldableCalendar(Context context) {
         super(context);
@@ -112,7 +113,7 @@ public class FoldableCalendar extends RelativeLayout {
         reload();
     }
 
-    private void initHighlight() {
+    private void highlight() {
         // reset other items
         for (int i = 0; i < mAdapter.getCount(); i++) {
             Day day = mAdapter.getItem(i);
@@ -131,19 +132,28 @@ public class FoldableCalendar extends RelativeLayout {
                 txtDay.setTextColor(mDefaultColor);
             }
         }
-    }
 
-    private void highlight(View v, int position) {
-        initHighlight();
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            Day tempDay = mAdapter.getItem(i);
 
+            if (mSelectedItem != null
+                    && tempDay.getYear() == mSelectedItem.getYear()
+                    && tempDay.getMonth() == mSelectedItem.getMonth()
+                    && tempDay.getDay() == mSelectedItem.getDay()) {
 
-        // set the color of item
-        TextView txtDay = (TextView) v.findViewById(R.id.txt_day);
-        txtDay.setBackgroundResource(R.drawable.circle_white_solid_background);
-        txtDay.setTextColor(mPrimaryColor);
+                View view = mAdapter.getView(i);
+                // set the color of item
+                TextView txtDay = (TextView) view.findViewById(R.id.txt_day);
+                txtDay.setBackgroundResource(R.drawable.circle_white_solid_background);
+                txtDay.setTextColor(mPrimaryColor);
 
-        if (mListener != null) {
-            mListener.onClick(v, mAdapter.getItem(position));
+                if (mListener != null) {
+                    mListener.onClick(view, new Day(
+                            mSelectedItem.getYear(),
+                            mSelectedItem.getMonth(),
+                            mSelectedItem.getDay()));
+                }
+            }
         }
     }
 
@@ -156,9 +166,7 @@ public class FoldableCalendar extends RelativeLayout {
         mTxtTitle.setText(dateFormat.format(mAdapter.getCalendar().getTime()));
         mTableBody.removeAllViews();
 
-        initHighlight();
-
-        TableRow rowCurrent = null;
+        TableRow rowCurrent;
 
         // set day of week
         int[] dayOfWeekIds = {
@@ -197,19 +205,23 @@ public class FoldableCalendar extends RelativeLayout {
                         ViewGroup.LayoutParams.WRAP_CONTENT));
                 mTableBody.addView(rowCurrent);
             }
-            final View item = mAdapter.getView(position);
-            item.setLayoutParams(new TableRow.LayoutParams(
+            final View view = mAdapter.getView(position);
+            view.setLayoutParams(new TableRow.LayoutParams(
                     0,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     1));
-            item.setOnClickListener(new OnClickListener() {
+            view.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    highlight(v, position);
+                    Day day = mAdapter.getItem(position);
+                    mSelectedItem = new Day(day.getYear(), day.getMonth(), day.getDay());
+                    highlight();
                 }
             });
-            rowCurrent.addView(item);
+            rowCurrent.addView(view);
         }
+
+        highlight();
     }
 
     // public methods
