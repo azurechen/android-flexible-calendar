@@ -234,9 +234,7 @@ public class FoldableCalendar extends LinearLayout {
             view.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Day day = mAdapter.getItem(position);
-                    mSelectedItem = new Day(day.getYear(), day.getMonth(), day.getDay());
-                    highlight();
+                    select(mAdapter.getItem(position));
                 }
             });
             rowCurrent.addView(view);
@@ -363,6 +361,11 @@ public class FoldableCalendar extends LinearLayout {
             anim.setDuration(duration);
             startAnimation(anim);
         }
+    }
+
+    public void select(Day day) {
+        mSelectedItem = new Day(day.getYear(), day.getMonth(), day.getDay());
+        highlight();
     }
 
     // callback
