@@ -202,14 +202,12 @@ public class FoldableCalendar extends RelativeLayout {
                     0,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     1));
-            if (position >= 7) {
-                item.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        highlight(v, position);
-                    }
-                });
-            }
+            item.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    highlight(v, position);
+                }
+            });
             rowCurrent.addView(item);
         }
     }
