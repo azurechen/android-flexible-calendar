@@ -22,6 +22,7 @@ public class CalendarAdapter {
 	
 	public CalendarAdapter(Context context, Calendar cal){
 		this.mCal = cal;
+		this.mCal.set(Calendar.DAY_OF_MONTH, 1);
 
 		mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -65,11 +66,10 @@ public class CalendarAdapter {
 		int year = mCal.get(Calendar.YEAR);
 		int month = mCal.get(Calendar.MONTH);
 
-		Calendar firstDayCal = Calendar.getInstance();
-		firstDayCal.set(year, month, 1);
+		mCal.set(year, month, 1);
 
-		int lastDayOfMonth = firstDayCal.getActualMaximum(Calendar.DAY_OF_MONTH);
-        int firstDayOfWeek = firstDayCal.get(Calendar.DAY_OF_WEEK) - 1;
+		int lastDayOfMonth = mCal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        int firstDayOfWeek = mCal.get(Calendar.DAY_OF_WEEK) - 1;
 
 		// generate day list
 		int offset = 0 - (firstDayOfWeek - mFirstDayOfWeek) + 1;
