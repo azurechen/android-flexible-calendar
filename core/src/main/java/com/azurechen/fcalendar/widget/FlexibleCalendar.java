@@ -2,6 +2,7 @@ package com.azurechen.fcalendar.widget;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +48,9 @@ public class FlexibleCalendar extends LinearLayout {
     private enum State {COLLAPSED, EXPANDED, PROCESSING }
     private int mInitHeight = 0;
     private State mState = State.EXPANDED;
+
+    private Handler mHandler = new Handler();
+    private boolean mIsWaitingForUpdate = false;
 
     private int mDefaultColor;
     private int mPrimaryColor;
@@ -109,6 +113,17 @@ public class FlexibleCalendar extends LinearLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         mInitHeight = mTableBody.getMeasuredHeight();
+
+        if (mIsWaitingForUpdate) {
+            highlight();
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    collapseTo(getSuitableRowIndex());
+                }
+            });
+            mIsWaitingForUpdate = false;
+        }
     }
 
     private void prevMonth() {
@@ -241,6 +256,7 @@ public class FlexibleCalendar extends LinearLayout {
         }
 
         highlight();
+        mIsWaitingForUpdate = true;
     }
 
     // public methods
@@ -337,6 +353,23 @@ public class FlexibleCalendar extends LinearLayout {
         }
     }
 
+    private void collapseTo(int index) {
+        final int targetHeight = mTableBody.getChildAt(index).getMeasuredHeight();
+        int tempHeight = 0;
+        for (int i = 0; i < index; i++) {
+            tempHeight += mTableBody.getChildAt(i).getMeasuredHeight();
+        }
+        final int topHeight = tempHeight;
+
+        if (mState == State.COLLAPSED) {
+            mScrollViewBody.getLayoutParams().height = targetHeight;
+
+            mScrollViewBody.smoothScrollTo(0, topHeight);
+            mScrollViewBody.requestLayout();
+            mState = State.COLLAPSED;
+        }
+    }
+
     public void expand(int duration) {
         if (mState == State.COLLAPSED) {
             mState = State.PROCESSING;
@@ -365,6 +398,12 @@ public class FlexibleCalendar extends LinearLayout {
 
     public void select(Day day) {
         mSelectedItem = new Day(day.getYear(), day.getMonth(), day.getDay());
+
+        Calendar cal = mAdapter.getCalendar();
+        if (day.getMonth() != cal.get(Calendar.MONTH)) {
+            cal.set(day.getYear(), day.getMonth(), 1);
+            reload();
+        }
         highlight();
     }
 
