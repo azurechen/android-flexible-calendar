@@ -26,7 +26,7 @@ import java.util.Calendar;
 /**
  * Created by azurechen on 7/29/15.
  */
-public class FoldableCalendar extends LinearLayout {
+public class FlexibleCalendar extends LinearLayout {
 
     private static final int DEFAULT_FIRST_DAY_OF_WEEK = 0;
 
@@ -52,17 +52,17 @@ public class FoldableCalendar extends LinearLayout {
     private int mPrimaryColor;
     private Day mSelectedItem;
 
-    public FoldableCalendar(Context context) {
+    public FlexibleCalendar(Context context) {
         super(context);
         init(context);
     }
 
-    public FoldableCalendar(Context context, AttributeSet attrs) {
+    public FlexibleCalendar(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public FoldableCalendar(Context context, AttributeSet attrs, int defStyleAttr) {
+    public FlexibleCalendar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
@@ -74,7 +74,7 @@ public class FoldableCalendar extends LinearLayout {
         // load rootView from xml
         LayoutInflater vi =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rootView = vi.inflate(R.layout.widget_foldable_calendar, this, true);
+        View rootView = vi.inflate(R.layout.widget_flexible_calendar, this, true);
 
         // init UI
         mTxtTitle = (TextView) rootView.findViewById(R.id.txt_title);

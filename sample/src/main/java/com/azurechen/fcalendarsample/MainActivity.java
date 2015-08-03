@@ -8,7 +8,7 @@ import android.widget.Button;
 
 import com.azurechen.fcalendar.data.CalendarAdapter;
 import com.azurechen.fcalendar.data.Day;
-import com.azurechen.fcalendar.widget.FoldableCalendar;
+import com.azurechen.fcalendar.widget.FlexibleCalendar;
 
 import java.util.Calendar;
 
@@ -20,7 +20,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final FoldableCalendar viewCalendar = (FoldableCalendar) findViewById(R.id.calendar);
+        final FlexibleCalendar viewCalendar = (FlexibleCalendar) findViewById(R.id.calendar);
         final Button btnCollapse = (Button) findViewById(R.id.btn_collapse);
         final Button btnExpand = (Button) findViewById(R.id.btn_expand);
 
@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
         Calendar cal = Calendar.getInstance();
         CalendarAdapter adapter = new CalendarAdapter(this, cal);
         viewCalendar.setAdapter(adapter);
-        viewCalendar.setOnItemClickListener(new FoldableCalendar.OnItemClickListener() {
+        viewCalendar.setOnItemClickListener(new FlexibleCalendar.OnItemClickListener() {
             @Override
             public void onClick(View v, Day d) {
                 Log.i(getClass().getName(), "Selected Day: "
