@@ -10,16 +10,43 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageButton
-            android:id="@+id/btn_prev_month"
-            android:layout_width="@dimen/title_bar_button_width"
-            android:layout_height="@dimen/title_bar_button_height"
-            android:layout_centerVertical="true"
-            android:layout_alignParentStart="true"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:background="?attr/actionBarItemBackground"
-            android:src="@mipmap/ic_chevron_left" />
+        <RelativeLayout
+            android:id="@+id/layout_btn_group_month"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/btn_prev_month"
+                style="@style/TitleBarButton"
+                android:layout_alignParentStart="true"
+                android:src="@mipmap/ic_chevron_left" />
+
+            <ImageButton
+                android:id="@+id/btn_next_month"
+                style="@style/TitleBarButton"
+                android:layout_alignParentEnd="true"
+                android:src="@mipmap/ic_chevron_right" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_btn_group_week"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/btn_prev_week"
+                style="@style/TitleBarButton"
+                android:layout_alignParentStart="true"
+                android:src="@mipmap/ic_chevron_left" />
+
+            <ImageButton
+                android:id="@+id/btn_next_week"
+                style="@style/TitleBarButton"
+                android:layout_alignParentEnd="true"
+                android:src="@mipmap/ic_chevron_right" />
+
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/txt_title"
@@ -30,17 +57,6 @@
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:text="Jun 2015" />
-
-        <ImageButton
-            android:id="@+id/btn_next_month"
-            android:layout_width="@dimen/title_bar_button_width"
-            android:layout_height="@dimen/title_bar_button_height"
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:background="?attr/actionBarItemBackground"
-            android:src="@mipmap/ic_chevron_right" />
 
     </RelativeLayout>
 

@@ -11,6 +11,7 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -38,20 +39,27 @@ public class FlexibleCalendar extends LinearLayout {
     private TableLayout mTableHead;
     private LockScrollView mScrollViewBody;
     private TableLayout mTableBody;
+    private RelativeLayout mLayoutBtnGroupMonth;
+    private RelativeLayout mLayoutBtnGroupWeek;
     private ImageButton mBtnPrevMonth;
     private ImageButton mBtnNextMonth;
+    private ImageButton mBtnPrevWeek;
+    private ImageButton mBtnNextWeek;
 
     private CalendarAdapter mAdapter;
 
     private OnItemClickListener mListener;
 
-    private enum State {COLLAPSED, EXPANDED, PROCESSING }
+    private enum State { COLLAPSED, EXPANDED, PROCESSING }
     private int mInitHeight = 0;
     private State mState = State.EXPANDED;
 
     private Handler mHandler = new Handler();
     private boolean mIsWaitingForUpdate = false;
 
+    private int mCurrentWeekIndex;
+
+    // attributes
     private int mDefaultColor;
     private int mPrimaryColor;
     private Day mSelectedItem;
@@ -85,12 +93,17 @@ public class FlexibleCalendar extends LinearLayout {
         mTableHead = (TableLayout) rootView.findViewById(R.id.table_head);
         mScrollViewBody = (LockScrollView) rootView.findViewById(R.id.scroll_view_body);
         mTableBody = (TableLayout) rootView.findViewById(R.id.table_body);
+        mLayoutBtnGroupMonth = (RelativeLayout) rootView.findViewById(R.id.layout_btn_group_month);
+        mLayoutBtnGroupWeek = (RelativeLayout) rootView.findViewById(R.id.layout_btn_group_week);
         mBtnPrevMonth = (ImageButton) rootView.findViewById(R.id.btn_prev_month);
         mBtnNextMonth = (ImageButton) rootView.findViewById(R.id.btn_next_month);
+        mBtnPrevWeek = (ImageButton) rootView.findViewById(R.id.btn_prev_week);
+        mBtnNextWeek = (ImageButton) rootView.findViewById(R.id.btn_next_week);
 
         // init default attrs
         mPrimaryColor = context.getResources().getColor(R.color.primary_pink);
         mDefaultColor = Color.WHITE;
+        mLayoutBtnGroupWeek.setVisibility(GONE);
 
         // bind events
         mBtnPrevMonth.setOnClickListener(new OnClickListener() {
@@ -106,6 +119,20 @@ public class FlexibleCalendar extends LinearLayout {
                 nextMonth();
             }
         });
+
+        mBtnPrevWeek.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                prevWeek();
+            }
+        });
+
+        mBtnNextWeek.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nextWeek();
+            }
+        });
     }
 
     @Override
@@ -119,7 +146,7 @@ public class FlexibleCalendar extends LinearLayout {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    collapseTo(getSuitableRowIndex());
+                    collapseTo(mCurrentWeekIndex);
                 }
             });
             mIsWaitingForUpdate = false;
@@ -144,6 +171,26 @@ public class FlexibleCalendar extends LinearLayout {
             cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
         }
         reload();
+    }
+
+    private void prevWeek() {
+        if (mCurrentWeekIndex - 1 < 0) {
+            mCurrentWeekIndex = -1;
+            prevMonth();
+        } else {
+            mCurrentWeekIndex --;
+            collapseTo(mCurrentWeekIndex);
+        }
+    }
+
+    private void nextWeek() {
+        if (mCurrentWeekIndex + 1 >= mTableBody.getChildCount()) {
+            mCurrentWeekIndex = 0;
+            nextMonth();
+        } else {
+            mCurrentWeekIndex ++;
+            collapseTo(mCurrentWeekIndex);
+        }
     }
 
     private void highlight() {
@@ -265,6 +312,9 @@ public class FlexibleCalendar extends LinearLayout {
         adapter.setFirstDayOfWeek(DEFAULT_FIRST_DAY_OF_WEEK);
 
         reload();
+
+        // init week
+        mCurrentWeekIndex = getSuitableRowIndex();
     }
 
     public void addEventTag(int numYear, int numMonth, int numDay) {
@@ -319,7 +369,13 @@ public class FlexibleCalendar extends LinearLayout {
         if (mState == State.EXPANDED) {
             mState = State.PROCESSING;
 
+            mLayoutBtnGroupMonth.setVisibility(GONE);
+            mLayoutBtnGroupWeek.setVisibility(VISIBLE);
+            mBtnPrevWeek.setClickable(false);
+            mBtnNextWeek.setClickable(false);
+
             int index = getSuitableRowIndex();
+            mCurrentWeekIndex = index;
 
             final int currentHeight = mInitHeight;
             final int targetHeight = mTableBody.getChildAt(index).getMeasuredHeight();
@@ -345,6 +401,9 @@ public class FlexibleCalendar extends LinearLayout {
 
                     if (interpolatedTime == 1) {
                         mState = State.COLLAPSED;
+
+                        mBtnPrevWeek.setClickable(true);
+                        mBtnNextWeek.setClickable(true);
                     }
                 }
             };
@@ -354,25 +413,34 @@ public class FlexibleCalendar extends LinearLayout {
     }
 
     private void collapseTo(int index) {
-        final int targetHeight = mTableBody.getChildAt(index).getMeasuredHeight();
-        int tempHeight = 0;
-        for (int i = 0; i < index; i++) {
-            tempHeight += mTableBody.getChildAt(i).getMeasuredHeight();
-        }
-        final int topHeight = tempHeight;
-
         if (mState == State.COLLAPSED) {
+            if (index == -1) {
+                index = mTableBody.getChildCount() - 1;
+            }
+            mCurrentWeekIndex = index;
+
+            final int targetHeight = mTableBody.getChildAt(index).getMeasuredHeight();
+            int tempHeight = 0;
+            for (int i = 0; i < index; i++) {
+                tempHeight += mTableBody.getChildAt(i).getMeasuredHeight();
+            }
+            final int topHeight = tempHeight;
+
             mScrollViewBody.getLayoutParams().height = targetHeight;
 
             mScrollViewBody.smoothScrollTo(0, topHeight);
             mScrollViewBody.requestLayout();
-            mState = State.COLLAPSED;
         }
     }
 
     public void expand(int duration) {
         if (mState == State.COLLAPSED) {
             mState = State.PROCESSING;
+
+            mLayoutBtnGroupMonth.setVisibility(VISIBLE);
+            mLayoutBtnGroupWeek.setVisibility(GONE);
+            mBtnPrevMonth.setClickable(false);
+            mBtnNextMonth.setClickable(false);
 
             final int currentHeight = mScrollViewBody.getMeasuredHeight();
             final int targetHeight = mInitHeight;
@@ -388,6 +456,9 @@ public class FlexibleCalendar extends LinearLayout {
 
                     if (interpolatedTime == 1) {
                         mState = State.EXPANDED;
+
+                        mBtnPrevMonth.setClickable(true);
+                        mBtnNextMonth.setClickable(true);
                     }
                 }
             };

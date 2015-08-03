@@ -38,6 +38,7 @@ public class MainActivity extends Activity {
         viewCalendar.addEventTag(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 10);
         viewCalendar.addEventTag(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 22);
         viewCalendar.addEventTag(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 27);
+        viewCalendar.addEventTag(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, 1);
 
         btnCollapse.setOnClickListener(new View.OnClickListener() {
             @Override

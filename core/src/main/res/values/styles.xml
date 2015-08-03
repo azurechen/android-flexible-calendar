@@ -3,4 +3,13 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
     </style>
 
+    <style name="TitleBarButton">
+        <item name="android:layout_width">@dimen/title_bar_button_width</item>
+        <item name="android:layout_height">@dimen/title_bar_button_height</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:background">?attr/actionBarItemBackground</item>
+    </style>
+
 </resources>
