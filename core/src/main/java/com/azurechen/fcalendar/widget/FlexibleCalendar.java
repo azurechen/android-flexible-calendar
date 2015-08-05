@@ -48,7 +48,7 @@ public class FlexibleCalendar extends LinearLayout {
 
     private CalendarAdapter mAdapter;
 
-    private OnItemClickListener mListener;
+    private CalendarListener mListener;
 
     private enum State { COLLAPSED, EXPANDED, PROCESSING }
     private int mInitHeight = 0;
@@ -62,7 +62,7 @@ public class FlexibleCalendar extends LinearLayout {
     // attributes
     private int mDefaultColor;
     private int mPrimaryColor;
-    private Day mSelectedItem;
+    private Day mSelectedItem = null;
 
     public FlexibleCalendar(Context context) {
         super(context);
@@ -150,46 +150,7 @@ public class FlexibleCalendar extends LinearLayout {
                 }
             });
             mIsWaitingForUpdate = false;
-        }
-    }
-
-    private void prevMonth() {
-        Calendar cal = mAdapter.getCalendar();
-        if(cal.get(Calendar.MONTH) == cal.getActualMinimum(Calendar.MONTH)) {
-            cal.set((cal.get(Calendar.YEAR) - 1), cal.getActualMaximum(Calendar.MONTH), 1);
-        } else {
-            cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) - 1);
-        }
-        reload();
-    }
-
-    private void nextMonth() {
-        Calendar cal = mAdapter.getCalendar();
-        if(cal.get(Calendar.MONTH) == cal.getActualMaximum(Calendar.MONTH)) {
-            cal.set((cal.get(Calendar.YEAR)+1), cal.getActualMinimum(Calendar.MONTH),1);
-        } else {
-            cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
-        }
-        reload();
-    }
-
-    private void prevWeek() {
-        if (mCurrentWeekIndex - 1 < 0) {
-            mCurrentWeekIndex = -1;
-            prevMonth();
-        } else {
-            mCurrentWeekIndex --;
-            collapseTo(mCurrentWeekIndex);
-        }
-    }
-
-    private void nextWeek() {
-        if (mCurrentWeekIndex + 1 >= mTableBody.getChildCount()) {
-            mCurrentWeekIndex = 0;
-            nextMonth();
-        } else {
-            mCurrentWeekIndex ++;
-            collapseTo(mCurrentWeekIndex);
+            mListener.onDataUpdate();
         }
     }
 
@@ -212,13 +173,6 @@ public class FlexibleCalendar extends LinearLayout {
             if (isSelectedDay(day)) {
                 txtDay.setBackgroundResource(R.drawable.circle_white_solid_background);
                 txtDay.setTextColor(mPrimaryColor);
-
-                if (mListener != null) {
-                    mListener.onClick(view, new Day(
-                            mSelectedItem.getYear(),
-                            mSelectedItem.getMonth(),
-                            mSelectedItem.getDay()));
-                }
             }
         }
     }
@@ -297,6 +251,10 @@ public class FlexibleCalendar extends LinearLayout {
                 @Override
                 public void onClick(View v) {
                     select(mAdapter.getItem(position));
+
+                    if (mListener != null) {
+                        mListener.onItemClick(view);
+                    }
                 }
             });
             rowCurrent.addView(view);
@@ -321,6 +279,63 @@ public class FlexibleCalendar extends LinearLayout {
         mAdapter.addEvent(new Event(numYear, numMonth, numDay));
 
         reload();
+    }
+
+    public void prevMonth() {
+        Calendar cal = mAdapter.getCalendar();
+        if(cal.get(Calendar.MONTH) == cal.getActualMinimum(Calendar.MONTH)) {
+            cal.set((cal.get(Calendar.YEAR) - 1), cal.getActualMaximum(Calendar.MONTH), 1);
+        } else {
+            cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) - 1);
+        }
+        reload();
+        mListener.onMonthChange();
+    }
+
+    public void nextMonth() {
+        Calendar cal = mAdapter.getCalendar();
+        if(cal.get(Calendar.MONTH) == cal.getActualMaximum(Calendar.MONTH)) {
+            cal.set((cal.get(Calendar.YEAR)+1), cal.getActualMinimum(Calendar.MONTH),1);
+        } else {
+            cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
+        }
+        reload();
+        mListener.onMonthChange();
+    }
+
+    public void prevWeek() {
+        if (mCurrentWeekIndex - 1 < 0) {
+            mCurrentWeekIndex = -1;
+            prevMonth();
+        } else {
+            mCurrentWeekIndex --;
+            collapseTo(mCurrentWeekIndex);
+        }
+    }
+
+    public void nextWeek() {
+        if (mCurrentWeekIndex + 1 >= mTableBody.getChildCount()) {
+            mCurrentWeekIndex = 0;
+            nextMonth();
+        } else {
+            mCurrentWeekIndex ++;
+            collapseTo(mCurrentWeekIndex);
+        }
+    }
+
+    public int getYear() {
+        return mAdapter.getCalendar().get(Calendar.YEAR);
+    }
+
+    public int getMonth() {
+        return mAdapter.getCalendar().get(Calendar.MONTH);
+    }
+
+    public Day getSelectedDay() {
+        return new Day(
+                mSelectedItem.getYear(),
+                mSelectedItem.getMonth(),
+                mSelectedItem.getDay());
     }
 
     public boolean isSelectedDay(Day day) {
@@ -430,6 +445,8 @@ public class FlexibleCalendar extends LinearLayout {
 
             mScrollViewBody.smoothScrollTo(0, topHeight);
             mScrollViewBody.requestLayout();
+
+            mListener.onWeekChange(mCurrentWeekIndex);
         }
     }
 
@@ -474,15 +491,31 @@ public class FlexibleCalendar extends LinearLayout {
         if (day.getMonth() != cal.get(Calendar.MONTH)) {
             cal.set(day.getYear(), day.getMonth(), 1);
             reload();
+            mListener.onMonthChange();
         }
         highlight();
+        mListener.onDaySelect();
     }
 
     // callback
-    public void setOnItemClickListener(OnItemClickListener listener) {
+    public void setCalendarListener(CalendarListener listener) {
         mListener = listener;
     }
-    public interface OnItemClickListener {
-        void onClick(View v, Day d);
+    public interface CalendarListener {
+
+        // trigger when the day is selected programmatically or clicked by user.
+        void onDaySelect();
+
+        // trigger only when the views of day on calendar are clicked by user.
+        void onItemClick(View v);
+
+        // trigger when the data of calendar are updated by changing month or adding events.
+        void onDataUpdate();
+
+        // trigger when the month are changed.
+        void onMonthChange();
+
+        // trigger when the week position are changed.
+        void onWeekChange(int position);
     }
 }

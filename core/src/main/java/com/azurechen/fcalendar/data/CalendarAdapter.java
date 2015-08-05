@@ -21,7 +21,7 @@ public class CalendarAdapter {
 	ArrayList<Event> mEventList = new ArrayList<>();
 	
 	public CalendarAdapter(Context context, Calendar cal){
-		this.mCal = cal;
+		this.mCal = (Calendar) cal.clone();
 		this.mCal.set(Calendar.DAY_OF_MONTH, 1);
 
 		mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

@@ -28,17 +28,50 @@ public class MainActivity extends Activity {
         Calendar cal = Calendar.getInstance();
         CalendarAdapter adapter = new CalendarAdapter(this, cal);
         viewCalendar.setAdapter(adapter);
-        viewCalendar.setOnItemClickListener(new FlexibleCalendar.OnItemClickListener() {
+
+        // bind events of calendar
+        viewCalendar.setCalendarListener(new FlexibleCalendar.CalendarListener() {
             @Override
-            public void onClick(View v, Day d) {
+            public void onDaySelect() {
+                Day day = viewCalendar.getSelectedDay();
                 Log.i(getClass().getName(), "Selected Day: "
-                        + d.getYear() + "/" + (d.getMonth() + 1) + "/" + d.getDay());
+                        + day.getYear() + "/" + (day.getMonth() + 1) + "/" + day.getDay());
+            }
+
+            @Override
+            public void onItemClick(View v) {
+                Day day = viewCalendar.getSelectedDay();
+                Log.i(getClass().getName(), "The Day of Clicked View: "
+                        + day.getYear() + "/" + (day.getMonth() + 1) + "/" + day.getDay());
+            }
+
+            @Override
+            public void onDataUpdate() {
+                Log.i(getClass().getName(), "Data Updated");
+            }
+
+            @Override
+            public void onMonthChange() {
+                Log.i(getClass().getName(), "Month Changed"
+                        + ". Current Year: " + viewCalendar.getYear()
+                        + ", Current Month: " + (viewCalendar.getMonth() + 1));
+            }
+
+            @Override
+            public void onWeekChange(int position) {
+                Log.i(getClass().getName(), "Week Changed"
+                        + ". Current Year: " + viewCalendar.getYear()
+                        + ", Current Month: " + (viewCalendar.getMonth() + 1)
+                        + ", Current Week position of Month: " + position);
             }
         });
-        viewCalendar.addEventTag(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 10);
-        viewCalendar.addEventTag(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 22);
-        viewCalendar.addEventTag(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 27);
-        viewCalendar.addEventTag(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, 1);
+
+        // use methods
+        viewCalendar.addEventTag(2015, 8, 10);
+        viewCalendar.addEventTag(2015, 8, 22);
+        viewCalendar.addEventTag(2015, 8, 27);
+
+        viewCalendar.select(new Day(2015, 4, 22));
 
         btnCollapse.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,7 +79,6 @@ public class MainActivity extends Activity {
                 viewCalendar.collapse(500);
             }
         });
-
         btnExpand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
