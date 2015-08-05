@@ -47,10 +47,8 @@ public class FlexibleCalendar extends LinearLayout {
     private ImageButton mBtnNextWeek;
 
     private CalendarAdapter mAdapter;
-
     private CalendarListener mListener;
 
-    private enum State { COLLAPSED, EXPANDED, PROCESSING }
     private int mInitHeight = 0;
     private State mState = State.EXPANDED;
 
@@ -63,6 +61,9 @@ public class FlexibleCalendar extends LinearLayout {
     private int mDefaultColor;
     private int mPrimaryColor;
     private Day mSelectedItem = null;
+
+    // public variables
+    public enum State { COLLAPSED, EXPANDED, PROCESSING }
 
     public FlexibleCalendar(Context context) {
         super(context);
@@ -103,7 +104,7 @@ public class FlexibleCalendar extends LinearLayout {
         // init default attrs
         mPrimaryColor = context.getResources().getColor(R.color.primary_pink);
         mDefaultColor = Color.WHITE;
-        mLayoutBtnGroupWeek.setVisibility(GONE);
+        setState(State.EXPANDED);
 
         // bind events
         mBtnPrevMonth.setOnClickListener(new OnClickListener() {
@@ -466,7 +467,12 @@ public class FlexibleCalendar extends LinearLayout {
 
             mScrollViewBody.getLayoutParams().height = targetHeight;
 
-            mScrollViewBody.smoothScrollTo(0, topHeight);
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mScrollViewBody.smoothScrollTo(0, topHeight);
+                }
+            });
             mScrollViewBody.requestLayout();
 
             mListener.onWeekChange(mCurrentWeekIndex);
@@ -512,6 +518,23 @@ public class FlexibleCalendar extends LinearLayout {
         highlight();
 
         mListener.onDaySelect();
+    }
+
+    public void setState(State state) {
+        if (mState != state) {
+            mState = state;
+
+            if (mState == State.EXPANDED) {
+                mLayoutBtnGroupMonth.setVisibility(VISIBLE);
+                mLayoutBtnGroupWeek.setVisibility(GONE);
+            }
+            if (mState == State.COLLAPSED) {
+                mLayoutBtnGroupMonth.setVisibility(GONE);
+                mLayoutBtnGroupWeek.setVisibility(VISIBLE);
+            }
+            mIsWaitingForUpdate = true;
+            requestLayout();
+        }
     }
 
     // callback
