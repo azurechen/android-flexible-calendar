@@ -17,7 +17,8 @@ public class CalendarAdapter {
 	private Calendar mCal;
 	private LayoutInflater mInflater;
 	
-	ArrayList<Day> mDayList = new ArrayList<>();
+	ArrayList<Day> mItemList = new ArrayList<>();
+	ArrayList<View> mViewList = new ArrayList<>();
 	ArrayList<Event> mEventList = new ArrayList<>();
 	
 	public CalendarAdapter(Context context, Calendar cal){
@@ -31,15 +32,15 @@ public class CalendarAdapter {
 
 	// public methods
 	public int getCount() {
-		return mDayList.size();
+		return mItemList.size();
 	}
 
 	public Day getItem(int position) {
-		return mDayList.get(position);
+		return mItemList.get(position);
 	}
 
 	public View getView(final int position) {
-		return mDayList.get(position).getView();
+		return mViewList.get(position);
 	}
 
 	public int getFirstDayOfWeek() {
@@ -60,7 +61,8 @@ public class CalendarAdapter {
 	
 	public void refresh() {
     	// clear data
-    	mDayList.clear();
+		mItemList.clear();
+		mViewList.clear();
 
 		// set calendar
 		int year = mCal.get(Calendar.YEAR);
@@ -126,8 +128,8 @@ public class CalendarAdapter {
 				}
 			}
 
-			day.setView(view);
-			mDayList.add(day);
+			mItemList.add(day);
+			mViewList.add(view);
 		}
     }
 	
