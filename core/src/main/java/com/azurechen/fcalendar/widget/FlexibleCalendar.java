@@ -250,11 +250,7 @@ public class FlexibleCalendar extends LinearLayout {
             view.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    select(mAdapter.getItem(position));
-
-                    if (mListener != null) {
-                        mListener.onItemClick(view);
-                    }
+                    onItemClicked(v, mAdapter.getItem(position));
                 }
             });
             rowCurrent.addView(view);
@@ -262,6 +258,33 @@ public class FlexibleCalendar extends LinearLayout {
 
         highlight();
         mIsWaitingForUpdate = true;
+    }
+
+    private void onItemClicked(View view, Day day) {
+        select(day);
+
+        Calendar cal = mAdapter.getCalendar();
+
+        int newYear = day.getYear();
+        int newMonth = day.getMonth();
+        int oldYear = cal.get(Calendar.YEAR);
+        int oldMonth = cal.get(Calendar.MONTH);
+        if (newMonth != oldMonth) {
+            cal.set(day.getYear(), day.getMonth(), 1);
+
+            if (newYear > oldYear || newMonth > oldMonth) {
+                mCurrentWeekIndex = 0;
+            }
+            if (newYear < oldYear || newMonth < oldMonth) {
+                mCurrentWeekIndex = -1;
+            }
+            mListener.onMonthChange();
+            reload();
+        }
+
+        if (mListener != null) {
+            mListener.onItemClick(view);
+        }
     }
 
     // public methods
@@ -486,14 +509,8 @@ public class FlexibleCalendar extends LinearLayout {
 
     public void select(Day day) {
         mSelectedItem = new Day(day.getYear(), day.getMonth(), day.getDay());
-
-        Calendar cal = mAdapter.getCalendar();
-        if (day.getMonth() != cal.get(Calendar.MONTH)) {
-            cal.set(day.getYear(), day.getMonth(), 1);
-            reload();
-            mListener.onMonthChange();
-        }
         highlight();
+
         mListener.onDaySelect();
     }
 
