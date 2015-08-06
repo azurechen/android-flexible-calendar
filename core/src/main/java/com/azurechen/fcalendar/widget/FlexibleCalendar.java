@@ -524,16 +524,17 @@ public class FlexibleCalendar extends LinearLayout {
         if (mState != state) {
             mState = state;
 
-            if (mState == State.EXPANDED) {
-                mLayoutBtnGroupMonth.setVisibility(VISIBLE);
-                mLayoutBtnGroupWeek.setVisibility(GONE);
-            }
-            if (mState == State.COLLAPSED) {
-                mLayoutBtnGroupMonth.setVisibility(GONE);
-                mLayoutBtnGroupWeek.setVisibility(VISIBLE);
-            }
             mIsWaitingForUpdate = true;
             requestLayout();
+        }
+
+        if (mState == State.EXPANDED) {
+            mLayoutBtnGroupMonth.setVisibility(VISIBLE);
+            mLayoutBtnGroupWeek.setVisibility(GONE);
+        }
+        if (mState == State.COLLAPSED) {
+            mLayoutBtnGroupMonth.setVisibility(GONE);
+            mLayoutBtnGroupWeek.setVisibility(VISIBLE);
         }
     }
 
