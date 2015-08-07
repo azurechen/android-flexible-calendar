@@ -101,6 +101,12 @@ public class FlexibleCalendar extends LinearLayout {
         mBtnPrevWeek = (ImageButton) rootView.findViewById(R.id.btn_prev_week);
         mBtnNextWeek = (ImageButton) rootView.findViewById(R.id.btn_next_week);
 
+        if (isInEditMode()) {
+            Calendar cal = Calendar.getInstance();
+            CalendarAdapter adapter = new CalendarAdapter(context, cal);
+            setAdapter(adapter);
+        }
+
         // init default attrs
         mPrimaryColor = context.getResources().getColor(R.color.primary_pink);
         mDefaultColor = Color.WHITE;
