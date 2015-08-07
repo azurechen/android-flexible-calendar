@@ -151,7 +151,9 @@ public class FlexibleCalendar extends LinearLayout {
                 }
             });
             mIsWaitingForUpdate = false;
-            mListener.onDataUpdate();
+            if (mListener != null) {
+                mListener.onDataUpdate();
+            }
         }
     }
 
@@ -279,7 +281,9 @@ public class FlexibleCalendar extends LinearLayout {
             if (newYear < oldYear || newMonth < oldMonth) {
                 mCurrentWeekIndex = -1;
             }
-            mListener.onMonthChange();
+            if (mListener != null) {
+                mListener.onMonthChange();
+            }
             reload();
         }
 
@@ -313,7 +317,9 @@ public class FlexibleCalendar extends LinearLayout {
             cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) - 1);
         }
         reload();
-        mListener.onMonthChange();
+        if (mListener != null) {
+            mListener.onMonthChange();
+        }
     }
 
     public void nextMonth() {
@@ -324,7 +330,9 @@ public class FlexibleCalendar extends LinearLayout {
             cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
         }
         reload();
-        mListener.onMonthChange();
+        if (mListener != null) {
+            mListener.onMonthChange();
+        }
     }
 
     public void prevWeek() {
@@ -475,7 +483,9 @@ public class FlexibleCalendar extends LinearLayout {
             });
             mScrollViewBody.requestLayout();
 
-            mListener.onWeekChange(mCurrentWeekIndex);
+            if (mListener != null) {
+                mListener.onWeekChange(mCurrentWeekIndex);
+            }
         }
     }
 
@@ -517,7 +527,9 @@ public class FlexibleCalendar extends LinearLayout {
         mSelectedItem = new Day(day.getYear(), day.getMonth(), day.getDay());
         highlight();
 
-        mListener.onDaySelect();
+        if (mListener != null) {
+            mListener.onDaySelect();
+        }
     }
 
     public void setState(State state) {
