@@ -169,7 +169,7 @@ public class FlexibleCalendar extends LinearLayout {
             Day day = mAdapter.getItem(i);
             View view = mAdapter.getView(i);
             TextView txtDay = (TextView) view.findViewById(R.id.txt_day);
-            txtDay.setBackgroundResource(Color.TRANSPARENT);
+            txtDay.setBackgroundColor(Color.TRANSPARENT);
             txtDay.setTextColor(mDefaultColor);
 
             // set today's item
