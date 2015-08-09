@@ -36,28 +36,26 @@ public abstract class UICalendar extends LinearLayout {
     protected ImageButton mBtnNextWeek;
 
     // Attributes
-    protected String mStyle;
-    protected boolean mShowWeek = true;
-    protected int mFirstDayOfWeek = 0;
-    protected State mState = State.EXPANDED;
+    private String mStyle;
+    private boolean mShowWeek = true;
+    private int mFirstDayOfWeek = 0;
+    private State mState = State.EXPANDED;
 
-    protected int mTextColor = Color.BLACK;
-    protected int mPrimaryColor = Color.WHITE;
+    private int mTextColor = Color.BLACK;
+    private int mPrimaryColor = Color.WHITE;
 
-    protected int mTodayItemTextColor = Color.BLACK;
-    protected int mTodayItemBackground = R.drawable.circle_black_stroke_background;
-    protected int mSelectedItemTextColor = Color.WHITE;
-    protected int mSelectedItemBackground = R.drawable.circle_black_solid_background;
+    private int mTodayItemTextColor = Color.BLACK;
+    private int mTodayItemBackground = R.drawable.circle_black_stroke_background;
+    private int mSelectedItemTextColor = Color.WHITE;
+    private int mSelectedItemBackground = R.drawable.circle_black_solid_background;
 
-    protected int mButtonLeftSrc = R.drawable.ic_navigate_before_black;
-    protected int mButtonRightSrc = R.drawable.ic_navigate_next_black;
+    private int mButtonLeftSrc = R.drawable.ic_navigate_before_black;
+    private int mButtonRightSrc = R.drawable.ic_navigate_next_black;
 
-    protected Day mSelectedItem = null;
+    private Day mSelectedItem = null;
 
     // enums
     public enum State { COLLAPSED, EXPANDED, PROCESSING }
-
-
 
     public UICalendar(Context context) {
         super(context);
@@ -94,7 +92,119 @@ public abstract class UICalendar extends LinearLayout {
         mBtnNextMonth = (ImageButton) rootView.findViewById(R.id.btn_next_month);
         mBtnPrevWeek = (ImageButton) rootView.findViewById(R.id.btn_prev_week);
         mBtnNextWeek = (ImageButton) rootView.findViewById(R.id.btn_next_week);
+    }
 
+    public String getStyle() {
+        return mStyle;
+    }
+
+    public void setStyle(String mStyle) {
+        this.mStyle = mStyle;
+    }
+
+    public boolean isShowWeek() {
+        return mShowWeek;
+    }
+
+    public void setShowWeek(boolean mShowWeek) {
+        this.mShowWeek = mShowWeek;
+    }
+
+    public int getFirstDayOfWeek() {
+        return mFirstDayOfWeek;
+    }
+
+    public void setFirstDayOfWeek(int mFirstDayOfWeek) {
+        this.mFirstDayOfWeek = mFirstDayOfWeek;
+    }
+
+    public State getState() {
+        return mState;
+    }
+
+    public void setState(State mState) {
+        this.mState = mState;
+
+        if (mState == State.EXPANDED) {
+            mLayoutBtnGroupMonth.setVisibility(VISIBLE);
+            mLayoutBtnGroupWeek.setVisibility(GONE);
+        }
+        if (mState == State.COLLAPSED) {
+            mLayoutBtnGroupMonth.setVisibility(GONE);
+            mLayoutBtnGroupWeek.setVisibility(VISIBLE);
+        }
+    }
+
+    public int getTextColor() {
+        return mTextColor;
+    }
+
+    public void setTextColor(int mTextColor) {
+        this.mTextColor = mTextColor;
+    }
+
+    public int getPrimaryColor() {
+        return mPrimaryColor;
+    }
+
+    public void setPrimaryColor(int mPrimaryColor) {
+        this.mPrimaryColor = mPrimaryColor;
+    }
+
+    public int getTodayItemTextColor() {
+        return mTodayItemTextColor;
+    }
+
+    public void setTodayItemTextColor(int mTodayItemTextColor) {
+        this.mTodayItemTextColor = mTodayItemTextColor;
+    }
+
+    public int getTodayItemBackground() {
+        return mTodayItemBackground;
+    }
+
+    public void setTodayItemBackground(int mTodayItemBackground) {
+        this.mTodayItemBackground = mTodayItemBackground;
+    }
+
+    public int getSelectedItemTextColor() {
+        return mSelectedItemTextColor;
+    }
+
+    public void setSelectedItemTextColor(int mSelectedItemTextColor) {
+        this.mSelectedItemTextColor = mSelectedItemTextColor;
+    }
+
+    public int getSelectedItemBackground() {
+        return mSelectedItemBackground;
+    }
+
+    public void setSelectedItemBackground(int mSelectedItemBackground) {
+        this.mSelectedItemBackground = mSelectedItemBackground;
+    }
+
+    public int getButtonLeftSrc() {
+        return mButtonLeftSrc;
+    }
+
+    public void setButtonLeftSrc(int mButtonLeftSrc) {
+        this.mButtonLeftSrc = mButtonLeftSrc;
+    }
+
+    public int getButtonRightSrc() {
+        return mButtonRightSrc;
+    }
+
+    public void setButtonRightSrc(int mButtonRightSrc) {
+        this.mButtonRightSrc = mButtonRightSrc;
+    }
+
+    public Day getSelectedItem() {
+        return mSelectedItem;
+    }
+
+    public void setSelectedItem(Day mSelectedItem) {
+        this.mSelectedItem = mSelectedItem;
     }
 
 }

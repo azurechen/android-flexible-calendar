@@ -4,20 +4,16 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.azurechen.fcalendar.R;
-import com.azurechen.fcalendar.view.LockScrollView;
 import com.azurechen.fcalendar.data.CalendarAdapter;
 import com.azurechen.fcalendar.data.Day;
 import com.azurechen.fcalendar.data.Event;
@@ -28,78 +24,34 @@ import java.util.Calendar;
 /**
  * Created by azurechen on 7/29/15.
  */
-public class FlexibleCalendar extends LinearLayout {
+public class FlexibleCalendar extends UICalendar {
 
     private static final int DEFAULT_FIRST_DAY_OF_WEEK = 0;
-
-    private Context mContext;
-    private LayoutInflater mInflater;
-
-    private TextView mTxtTitle;
-    private TableLayout mTableHead;
-    private LockScrollView mScrollViewBody;
-    private TableLayout mTableBody;
-    private RelativeLayout mLayoutBtnGroupMonth;
-    private RelativeLayout mLayoutBtnGroupWeek;
-    private ImageButton mBtnPrevMonth;
-    private ImageButton mBtnNextMonth;
-    private ImageButton mBtnPrevWeek;
-    private ImageButton mBtnNextWeek;
 
     private CalendarAdapter mAdapter;
     private CalendarListener mListener;
 
     private int mInitHeight = 0;
-    private State mState = State.EXPANDED;
 
     private Handler mHandler = new Handler();
     private boolean mIsWaitingForUpdate = false;
 
     private int mCurrentWeekIndex;
 
-    // attributes
-    private int mDefaultColor;
-    private int mPrimaryColor;
-    private Day mSelectedItem = null;
-
-    // public variables
-    public enum State { COLLAPSED, EXPANDED, PROCESSING }
-
     public FlexibleCalendar(Context context) {
         super(context);
-        init(context);
     }
 
     public FlexibleCalendar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
     }
 
     public FlexibleCalendar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
     }
 
-    private void init(Context context) {
-        mContext = context;
-        mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        // load rootView from xml
-        LayoutInflater vi =
-                (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rootView = vi.inflate(R.layout.widget_flexible_calendar, this, true);
-
-        // init UI
-        mTxtTitle = (TextView) rootView.findViewById(R.id.txt_title);
-        mTableHead = (TableLayout) rootView.findViewById(R.id.table_head);
-        mScrollViewBody = (LockScrollView) rootView.findViewById(R.id.scroll_view_body);
-        mTableBody = (TableLayout) rootView.findViewById(R.id.table_body);
-        mLayoutBtnGroupMonth = (RelativeLayout) rootView.findViewById(R.id.layout_btn_group_month);
-        mLayoutBtnGroupWeek = (RelativeLayout) rootView.findViewById(R.id.layout_btn_group_week);
-        mBtnPrevMonth = (ImageButton) rootView.findViewById(R.id.btn_prev_month);
-        mBtnNextMonth = (ImageButton) rootView.findViewById(R.id.btn_next_month);
-        mBtnPrevWeek = (ImageButton) rootView.findViewById(R.id.btn_prev_week);
-        mBtnNextWeek = (ImageButton) rootView.findViewById(R.id.btn_next_week);
+    protected void init(Context context) {
+        super.init(context);
 
         if (isInEditMode()) {
             Calendar cal = Calendar.getInstance();
@@ -107,10 +59,7 @@ public class FlexibleCalendar extends LinearLayout {
             setAdapter(adapter);
         }
 
-        // init default attrs
-        mPrimaryColor = context.getResources().getColor(R.color.primary_pink);
-        mDefaultColor = Color.WHITE;
-        setState(State.EXPANDED);
+        setStateWithUpdateUI(getState());
 
         // bind events
         mBtnPrevMonth.setOnClickListener(new OnClickListener() {
@@ -170,18 +119,18 @@ public class FlexibleCalendar extends LinearLayout {
             View view = mAdapter.getView(i);
             TextView txtDay = (TextView) view.findViewById(R.id.txt_day);
             txtDay.setBackgroundColor(Color.TRANSPARENT);
-            txtDay.setTextColor(mDefaultColor);
+            txtDay.setTextColor(getTextColor());
 
             // set today's item
             if (isToady(day)) {
-                txtDay.setBackgroundResource(R.drawable.circle_white_stroke_background);
-                txtDay.setTextColor(mDefaultColor);
+                txtDay.setBackgroundResource(getTodayItemBackground());
+                txtDay.setTextColor(getTodayItemTextColor());
             }
 
             // set the selected item
             if (isSelectedDay(day)) {
-                txtDay.setBackgroundResource(R.drawable.circle_white_solid_background);
-                txtDay.setTextColor(mPrimaryColor);
+                txtDay.setBackgroundResource(getSelectedItemBackground());
+                txtDay.setTextColor(getSelectedItemTextColor());
             }
         }
     }
@@ -331,7 +280,7 @@ public class FlexibleCalendar extends LinearLayout {
     public void nextMonth() {
         Calendar cal = mAdapter.getCalendar();
         if(cal.get(Calendar.MONTH) == cal.getActualMaximum(Calendar.MONTH)) {
-            cal.set((cal.get(Calendar.YEAR)+1), cal.getActualMinimum(Calendar.MONTH),1);
+            cal.set((cal.get(Calendar.YEAR) + 1), cal.getActualMinimum(Calendar.MONTH),1);
         } else {
             cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
         }
@@ -371,17 +320,17 @@ public class FlexibleCalendar extends LinearLayout {
 
     public Day getSelectedDay() {
         return new Day(
-                mSelectedItem.getYear(),
-                mSelectedItem.getMonth(),
-                mSelectedItem.getDay());
+                getSelectedItem().getYear(),
+                getSelectedItem().getMonth(),
+                getSelectedItem().getDay());
     }
 
     public boolean isSelectedDay(Day day) {
         return day != null
-                && mSelectedItem != null
-                && day.getYear() == mSelectedItem.getYear()
-                && day.getMonth() == mSelectedItem.getMonth()
-                && day.getDay() == mSelectedItem.getDay();
+                && getSelectedItem() != null
+                && day.getYear() == getSelectedItem().getYear()
+                && day.getMonth() == getSelectedItem().getMonth()
+                && day.getDay() == getSelectedItem().getDay();
     }
 
     public boolean isToady(Day day) {
@@ -419,8 +368,8 @@ public class FlexibleCalendar extends LinearLayout {
     }
 
     public void collapse(int duration) {
-        if (mState == State.EXPANDED) {
-            mState = State.PROCESSING;
+        if (getState() == State.EXPANDED) {
+            setState(State.PROCESSING);
 
             mLayoutBtnGroupMonth.setVisibility(GONE);
             mLayoutBtnGroupWeek.setVisibility(VISIBLE);
@@ -453,7 +402,7 @@ public class FlexibleCalendar extends LinearLayout {
                     }
 
                     if (interpolatedTime == 1) {
-                        mState = State.COLLAPSED;
+                        setState(State.COLLAPSED);
 
                         mBtnPrevWeek.setClickable(true);
                         mBtnNextWeek.setClickable(true);
@@ -466,7 +415,7 @@ public class FlexibleCalendar extends LinearLayout {
     }
 
     private void collapseTo(int index) {
-        if (mState == State.COLLAPSED) {
+        if (getState() == State.COLLAPSED) {
             if (index == -1) {
                 index = mTableBody.getChildCount() - 1;
             }
@@ -496,8 +445,8 @@ public class FlexibleCalendar extends LinearLayout {
     }
 
     public void expand(int duration) {
-        if (mState == State.COLLAPSED) {
-            mState = State.PROCESSING;
+        if (getState() == State.COLLAPSED) {
+            setState(State.PROCESSING);
 
             mLayoutBtnGroupMonth.setVisibility(VISIBLE);
             mLayoutBtnGroupWeek.setVisibility(GONE);
@@ -517,7 +466,7 @@ public class FlexibleCalendar extends LinearLayout {
                     mScrollViewBody.requestLayout();
 
                     if (interpolatedTime == 1) {
-                        mState = State.EXPANDED;
+                        setState(State.EXPANDED);
 
                         mBtnPrevMonth.setClickable(true);
                         mBtnNextMonth.setClickable(true);
@@ -530,7 +479,7 @@ public class FlexibleCalendar extends LinearLayout {
     }
 
     public void select(Day day) {
-        mSelectedItem = new Day(day.getYear(), day.getMonth(), day.getDay());
+        setSelectedItem(new Day(day.getYear(), day.getMonth(), day.getDay()));
         highlight();
 
         if (mListener != null) {
@@ -538,21 +487,12 @@ public class FlexibleCalendar extends LinearLayout {
         }
     }
 
-    public void setState(State state) {
-        if (mState != state) {
-            mState = state;
+    public void setStateWithUpdateUI(State state) {
+        setState(state);
 
+        if (getState() != state) {
             mIsWaitingForUpdate = true;
             requestLayout();
-        }
-
-        if (mState == State.EXPANDED) {
-            mLayoutBtnGroupMonth.setVisibility(VISIBLE);
-            mLayoutBtnGroupWeek.setVisibility(GONE);
-        }
-        if (mState == State.COLLAPSED) {
-            mLayoutBtnGroupMonth.setVisibility(GONE);
-            mLayoutBtnGroupWeek.setVisibility(VISIBLE);
         }
     }
 

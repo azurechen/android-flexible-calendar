@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="FlexibleCalendar">
+
+        <attr name="style" format="string" />
+        <attr name="showWeek" format="boolean" />
+        <attr name="firstDayOfWeek" format="integer" />
+        <attr name="state" format="string" />
+
+        <attr name="textColor" format="integer" />
+        <attr name="primaryColor" format="integer" />
+
+        <attr name="todayItem_textColor" format="integer" />
+        <attr name="todayItem_background" format="integer" />
+        <attr name="selectedItem_textColor" format="integer" />
+        <attr name="selectedItem_background" format="integer" />
+
+        <attr name="buttonLeft_src" format="integer" />
+        <attr name="buttonRight_src" format="integer" />
+
+        <attr name="defaultSelectedItem" format="string" />
+
+    </declare-styleable>
+
+</resources>

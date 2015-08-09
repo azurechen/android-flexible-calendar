@@ -12,7 +12,7 @@
         android:layout_height="@dimen/day_circle_height"
         android:gravity="center"
         android:textSize="13sp"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:background="@android:color/transparent" />
 
     <LinearLayout
