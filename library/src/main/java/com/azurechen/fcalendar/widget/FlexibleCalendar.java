@@ -50,6 +50,7 @@ public class FlexibleCalendar extends UICalendar {
         super(context, attrs, defStyleAttr);
     }
 
+    @Override
     protected void init(Context context) {
         super.init(context);
 
@@ -98,7 +99,7 @@ public class FlexibleCalendar extends UICalendar {
         mInitHeight = mTableBody.getMeasuredHeight();
 
         if (mIsWaitingForUpdate) {
-            highlight();
+            redraw();
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -112,25 +113,35 @@ public class FlexibleCalendar extends UICalendar {
         }
     }
 
-    private void highlight() {
-        // reset other items
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            Day day = mAdapter.getItem(i);
-            View view = mAdapter.getView(i);
-            TextView txtDay = (TextView) view.findViewById(R.id.txt_day);
-            txtDay.setBackgroundColor(Color.TRANSPARENT);
-            txtDay.setTextColor(getTextColor());
-
-            // set today's item
-            if (isToady(day)) {
-                txtDay.setBackgroundResource(getTodayItemBackground());
-                txtDay.setTextColor(getTodayItemTextColor());
+    @Override
+    protected void redraw() {
+        // redraw all views of week
+        TableRow rowWeek = (TableRow) mTableHead.getChildAt(0);
+        if (rowWeek != null) {
+            for (int i = 0; i < rowWeek.getChildCount(); i++) {
+                ((TextView) rowWeek.getChildAt(i)).setTextColor(getTextColor());
             }
+        }
+        // redraw all views of day
+        if (mAdapter != null) {
+            for (int i = 0; i < mAdapter.getCount(); i++) {
+                Day day = mAdapter.getItem(i);
+                View view = mAdapter.getView(i);
+                TextView txtDay = (TextView) view.findViewById(R.id.txt_day);
+                txtDay.setBackgroundColor(Color.TRANSPARENT);
+                txtDay.setTextColor(getTextColor());
 
-            // set the selected item
-            if (isSelectedDay(day)) {
-                txtDay.setBackgroundResource(getSelectedItemBackground());
-                txtDay.setTextColor(getSelectedItemTextColor());
+                // set today's item
+                if (isToady(day)) {
+                    txtDay.setBackgroundResource(getTodayItemBackground());
+                    txtDay.setTextColor(getTodayItemTextColor());
+                }
+
+                // set the selected item
+                if (isSelectedDay(day)) {
+                    txtDay.setBackgroundResource(getSelectedItemBackground());
+                    txtDay.setTextColor(getSelectedItemTextColor());
+                }
             }
         }
     }
@@ -214,7 +225,7 @@ public class FlexibleCalendar extends UICalendar {
             rowCurrent.addView(view);
         }
 
-        highlight();
+        redraw();
         mIsWaitingForUpdate = true;
     }
 
@@ -368,8 +379,8 @@ public class FlexibleCalendar extends UICalendar {
     }
 
     public void collapse(int duration) {
-        if (getState() == State.EXPANDED) {
-            setState(State.PROCESSING);
+        if (getState() == STATE_EXPANDED) {
+            setState(STATE_PROCESSING);
 
             mLayoutBtnGroupMonth.setVisibility(GONE);
             mLayoutBtnGroupWeek.setVisibility(VISIBLE);
@@ -402,7 +413,7 @@ public class FlexibleCalendar extends UICalendar {
                     }
 
                     if (interpolatedTime == 1) {
-                        setState(State.COLLAPSED);
+                        setState(STATE_COLLAPSED);
 
                         mBtnPrevWeek.setClickable(true);
                         mBtnNextWeek.setClickable(true);
@@ -415,7 +426,7 @@ public class FlexibleCalendar extends UICalendar {
     }
 
     private void collapseTo(int index) {
-        if (getState() == State.COLLAPSED) {
+        if (getState() == STATE_COLLAPSED) {
             if (index == -1) {
                 index = mTableBody.getChildCount() - 1;
             }
@@ -445,8 +456,8 @@ public class FlexibleCalendar extends UICalendar {
     }
 
     public void expand(int duration) {
-        if (getState() == State.COLLAPSED) {
-            setState(State.PROCESSING);
+        if (getState() == STATE_COLLAPSED) {
+            setState(STATE_PROCESSING);
 
             mLayoutBtnGroupMonth.setVisibility(VISIBLE);
             mLayoutBtnGroupWeek.setVisibility(GONE);
@@ -466,7 +477,7 @@ public class FlexibleCalendar extends UICalendar {
                     mScrollViewBody.requestLayout();
 
                     if (interpolatedTime == 1) {
-                        setState(State.EXPANDED);
+                        setState(STATE_EXPANDED);
 
                         mBtnPrevMonth.setClickable(true);
                         mBtnNextMonth.setClickable(true);
@@ -480,14 +491,14 @@ public class FlexibleCalendar extends UICalendar {
 
     public void select(Day day) {
         setSelectedItem(new Day(day.getYear(), day.getMonth(), day.getDay()));
-        highlight();
+        redraw();
 
         if (mListener != null) {
             mListener.onDaySelect();
         }
     }
 
-    public void setStateWithUpdateUI(State state) {
+    public void setStateWithUpdateUI(int state) {
         setState(state);
 
         if (getState() != state) {

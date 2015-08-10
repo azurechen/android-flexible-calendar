@@ -25,7 +25,7 @@ public class CalendarAdapter {
 		this.mCal = (Calendar) cal.clone();
 		this.mCal.set(Calendar.DAY_OF_MONTH, 1);
 
-		mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mInflater = LayoutInflater.from(context);
 
 		refresh();
 	}

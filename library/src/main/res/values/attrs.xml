@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="FlexibleCalendar">
+    <declare-styleable name="UICalendar">
 
-        <attr name="style" format="string" />
+        <attr name="style" format="enum">
+            <enum name="light" value="0" />
+            <enum name="pink" value="1" />
+            <enum name="orange" value="2" />
+            <enum name="blue" value="3" />
+            <enum name="green" value="4" />
+        </attr>
         <attr name="showWeek" format="boolean" />
-        <attr name="firstDayOfWeek" format="integer" />
-        <attr name="state" format="string" />
+        <attr name="firstDayOfWeek" format="enum">
+            <enum name="sunday" value="0" />
+            <enum name="monday" value="1" />
+            <enum name="tuesday" value="2" />
+            <enum name="wednesday" value="3" />
+            <enum name="thursday" value="4" />
+            <enum name="friday" value="5" />
+            <enum name="saturday" value="6" />
+        </attr>
+        <attr name="state" format="enum">
+            <enum name="expanded" value="0" />
+            <enum name="collapsed" value="1" />
+        </attr>
 
         <attr name="textColor" format="integer" />
         <attr name="primaryColor" format="integer" />
