@@ -43,10 +43,6 @@ public class CalendarAdapter {
 		return mViewList.get(position);
 	}
 
-	public int getFirstDayOfWeek() {
-		return mFirstDayOfWeek;
-	}
-
 	public void setFirstDayOfWeek(int firstDayOfWeek) {
 		mFirstDayOfWeek = firstDayOfWeek;
 	}

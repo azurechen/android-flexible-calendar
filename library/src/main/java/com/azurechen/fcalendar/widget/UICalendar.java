@@ -87,11 +87,14 @@ public abstract class UICalendar extends LinearLayout {
         super(context, attrs, defStyleAttr);
 
         init(context);
-        setAttributes(context.getTheme().obtainStyledAttributes(
-                attrs, R.styleable.UICalendar, defStyleAttr, 0));
+        TypedArray attributes = context.getTheme().obtainStyledAttributes(
+                attrs, R.styleable.UICalendar, defStyleAttr, 0);
+        setAttributes(attributes);
+        attributes.recycle();
     }
 
     protected abstract void redraw();
+    protected abstract void reload();
 
     protected void init(Context context) {
         mContext = context;
@@ -115,7 +118,10 @@ public abstract class UICalendar extends LinearLayout {
     }
 
     protected void setAttributes(TypedArray attrs) {
-        setStyle(attrs.getInt(R.styleable.UICalendar_style, STYLE_LIGHT));
+        setStyle(attrs.getInt(R.styleable.UICalendar_style, mStyle));
+        setShowWeek(attrs.getBoolean(R.styleable.UICalendar_showWeek, mShowWeek));
+        setFirstDayOfWeek(attrs.getInt(R.styleable.UICalendar_firstDayOfWeek, mFirstDayOfWeek));
+        setState(attrs.getInt(R.styleable.UICalendar_state, mState));
     }
 
     // getters and setters
@@ -167,6 +173,12 @@ public abstract class UICalendar extends LinearLayout {
 
     public void setShowWeek(boolean showWeek) {
         this.mShowWeek = showWeek;
+
+        if (showWeek) {
+            mTableHead.setVisibility(VISIBLE);
+        } else {
+            mTableHead.setVisibility(GONE);
+        }
     }
 
     public int getFirstDayOfWeek() {
@@ -175,6 +187,7 @@ public abstract class UICalendar extends LinearLayout {
 
     public void setFirstDayOfWeek(int firstDayOfWeek) {
         this.mFirstDayOfWeek = firstDayOfWeek;
+        reload();
     }
 
     public int getState() {

@@ -26,8 +26,6 @@ import java.util.Calendar;
  */
 public class FlexibleCalendar extends UICalendar {
 
-    private static final int DEFAULT_FIRST_DAY_OF_WEEK = 0;
-
     private CalendarAdapter mAdapter;
     private CalendarListener mListener;
 
@@ -146,6 +144,76 @@ public class FlexibleCalendar extends UICalendar {
         }
     }
 
+    @Override
+    protected void reload() {
+        if (mAdapter != null) {
+            mAdapter.refresh();
+
+            // reset UI
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy");
+            dateFormat.setTimeZone(mAdapter.getCalendar().getTimeZone());
+            mTxtTitle.setText(dateFormat.format(mAdapter.getCalendar().getTime()));
+            mTableHead.removeAllViews();
+            mTableBody.removeAllViews();
+
+            TableRow rowCurrent;
+
+            // set day of week
+            int[] dayOfWeekIds = {
+                    R.string.sunday,
+                    R.string.monday,
+                    R.string.tuesday,
+                    R.string.wednesday,
+                    R.string.thursday,
+                    R.string.friday,
+                    R.string.saturday
+            };
+            rowCurrent = new TableRow(mContext);
+            rowCurrent.setLayoutParams(new TableLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            for (int i = 0; i < 7; i++) {
+                View view = mInflater.inflate(R.layout.layout_day_of_week, null);
+                TextView txtDayOfWeek = (TextView) view.findViewById(R.id.txt_day_of_week);
+                txtDayOfWeek.setText(dayOfWeekIds[(i + getFirstDayOfWeek()) % 7]);
+                view.setLayoutParams(new TableRow.LayoutParams(
+                        0,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        1));
+                rowCurrent.addView(view);
+            }
+            mTableHead.addView(rowCurrent);
+
+            // set day view
+            for (int i = 0; i < mAdapter.getCount(); i++) {
+                final int position = i;
+
+                if (position % 7 == 0) {
+                    rowCurrent = new TableRow(mContext);
+                    rowCurrent.setLayoutParams(new TableLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT));
+                    mTableBody.addView(rowCurrent);
+                }
+                final View view = mAdapter.getView(position);
+                view.setLayoutParams(new TableRow.LayoutParams(
+                        0,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        1));
+                view.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onItemClicked(v, mAdapter.getItem(position));
+                    }
+                });
+                rowCurrent.addView(view);
+            }
+
+            redraw();
+            mIsWaitingForUpdate = true;
+        }
+    }
+
     private int getSuitableRowIndex() {
         if (getSelectedItemPosition() != -1) {
             View view = mAdapter.getView(getSelectedItemPosition());
@@ -160,73 +228,6 @@ public class FlexibleCalendar extends UICalendar {
         } else {
             return 0;
         }
-    }
-
-    private void reload() {
-        mAdapter.refresh();
-
-        // reset UI
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM yyyy");
-        dateFormat.setTimeZone(mAdapter.getCalendar().getTimeZone());
-        mTxtTitle.setText(dateFormat.format(mAdapter.getCalendar().getTime()));
-        mTableHead.removeAllViews();
-        mTableBody.removeAllViews();
-
-        TableRow rowCurrent;
-
-        // set day of week
-        int[] dayOfWeekIds = {
-                R.string.sunday,
-                R.string.monday,
-                R.string.tuesday,
-                R.string.wednesday,
-                R.string.thursday,
-                R.string.friday,
-                R.string.saturday
-        };
-        rowCurrent = new TableRow(mContext);
-        rowCurrent.setLayoutParams(new TableLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-        for (int i = 0; i < 7; i++) {
-            View view = mInflater.inflate(R.layout.layout_day_of_week, null);
-            TextView txtDayOfWeek = (TextView) view.findViewById(R.id.txt_day_of_week);
-            txtDayOfWeek.setText(dayOfWeekIds[(i + mAdapter.getFirstDayOfWeek()) % 7]);
-            view.setLayoutParams(new TableRow.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    1));
-            rowCurrent.addView(view);
-        }
-        mTableHead.addView(rowCurrent);
-
-        // set day view
-        for (int i = 0; i < mAdapter.getCount(); i ++) {
-            final int position = i;
-
-            if (position % 7 == 0) {
-                rowCurrent = new TableRow(mContext);
-                rowCurrent.setLayoutParams(new TableLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
-                mTableBody.addView(rowCurrent);
-            }
-            final View view = mAdapter.getView(position);
-            view.setLayoutParams(new TableRow.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    1));
-            view.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onItemClicked(v, mAdapter.getItem(position));
-                }
-            });
-            rowCurrent.addView(view);
-        }
-
-        redraw();
-        mIsWaitingForUpdate = true;
     }
 
     private void onItemClicked(View view, Day day) {
@@ -261,7 +262,7 @@ public class FlexibleCalendar extends UICalendar {
     // public methods
     public void setAdapter(CalendarAdapter adapter) {
         mAdapter = adapter;
-        adapter.setFirstDayOfWeek(DEFAULT_FIRST_DAY_OF_WEEK);
+        adapter.setFirstDayOfWeek(getFirstDayOfWeek());
 
         reload();
 
