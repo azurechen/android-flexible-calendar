@@ -71,7 +71,7 @@ public class CalendarAdapter {
 
 		// generate day list
 		int offset = 0 - (firstDayOfWeek - mFirstDayOfWeek) + 1;
-		int length = (int) Math.ceil((float) (lastDayOfMonth - offset) / 7) * 7;
+		int length = (int) Math.ceil((float) (lastDayOfMonth - offset + 1) / 7) * 7;
 		for (int i = offset; i < length + offset; i++) {
 			int numYear;
 			int numMonth;
