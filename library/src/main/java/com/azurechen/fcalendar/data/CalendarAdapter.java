@@ -13,120 +13,120 @@ import java.util.Calendar;
 
 public class CalendarAdapter {
 
-	private int mFirstDayOfWeek = 0;
-	private Calendar mCal;
-	private LayoutInflater mInflater;
-	
-	ArrayList<Day> mItemList = new ArrayList<>();
-	ArrayList<View> mViewList = new ArrayList<>();
-	ArrayList<Event> mEventList = new ArrayList<>();
-	
-	public CalendarAdapter(Context context, Calendar cal){
-		this.mCal = (Calendar) cal.clone();
-		this.mCal.set(Calendar.DAY_OF_MONTH, 1);
+    private int mFirstDayOfWeek = 0;
+    private Calendar mCal;
+    private LayoutInflater mInflater;
 
-		mInflater = LayoutInflater.from(context);
+    ArrayList<Day> mItemList = new ArrayList<>();
+    ArrayList<View> mViewList = new ArrayList<>();
+    ArrayList<Event> mEventList = new ArrayList<>();
 
-		refresh();
-	}
+    public CalendarAdapter(Context context, Calendar cal) {
+        this.mCal = (Calendar) cal.clone();
+        this.mCal.set(Calendar.DAY_OF_MONTH, 1);
 
-	// public methods
-	public int getCount() {
-		return mItemList.size();
-	}
+        mInflater = LayoutInflater.from(context);
 
-	public Day getItem(int position) {
-		return mItemList.get(position);
-	}
+        refresh();
+    }
 
-	public View getView(final int position) {
-		return mViewList.get(position);
-	}
+    // public methods
+    public int getCount() {
+        return mItemList.size();
+    }
 
-	public void setFirstDayOfWeek(int firstDayOfWeek) {
-		mFirstDayOfWeek = firstDayOfWeek;
-	}
+    public Day getItem(int position) {
+        return mItemList.get(position);
+    }
 
-	public Calendar getCalendar() {
-		return mCal;
-	}
+    public View getView(final int position) {
+        return mViewList.get(position);
+    }
 
-	public void addEvent(Event event) {
-		mEventList.add(event);
-	}
-	
-	public void refresh() {
-    	// clear data
-		mItemList.clear();
-		mViewList.clear();
+    public void setFirstDayOfWeek(int firstDayOfWeek) {
+        mFirstDayOfWeek = firstDayOfWeek;
+    }
 
-		// set calendar
-		int year = mCal.get(Calendar.YEAR);
-		int month = mCal.get(Calendar.MONTH);
+    public Calendar getCalendar() {
+        return mCal;
+    }
 
-		mCal.set(year, month, 1);
+    public void addEvent(Event event) {
+        mEventList.add(event);
+    }
 
-		int lastDayOfMonth = mCal.getActualMaximum(Calendar.DAY_OF_MONTH);
+    public void refresh() {
+        // clear data
+        mItemList.clear();
+        mViewList.clear();
+
+        // set calendar
+        int year = mCal.get(Calendar.YEAR);
+        int month = mCal.get(Calendar.MONTH);
+
+        mCal.set(year, month, 1);
+
+        int lastDayOfMonth = mCal.getActualMaximum(Calendar.DAY_OF_MONTH);
         int firstDayOfWeek = mCal.get(Calendar.DAY_OF_WEEK) - 1;
 
-		// generate day list
-		int offset = 0 - (firstDayOfWeek - mFirstDayOfWeek) + 1;
-		int length = (int) Math.ceil((float) (lastDayOfMonth - offset + 1) / 7) * 7;
-		for (int i = offset; i < length + offset; i++) {
-			int numYear;
-			int numMonth;
-			int numDay;
+        // generate day list
+        int offset = 0 - (firstDayOfWeek - mFirstDayOfWeek) + 1;
+        int length = (int) Math.ceil((float) (lastDayOfMonth - offset + 1) / 7) * 7;
+        for (int i = offset; i < length + offset; i++) {
+            int numYear;
+            int numMonth;
+            int numDay;
 
-			Calendar tempCal = Calendar.getInstance();
-			if (i <= 0) { // prev month
-				if (month == 0) {
-					numYear = year - 1;
-					numMonth = 11;
-				} else {
-					numYear = year;
-					numMonth = month - 1;
-				}
-				tempCal.set(numYear, numMonth, 1);
-				numDay = tempCal.getActualMaximum(Calendar.DAY_OF_MONTH) + i;
-			} else if (i > lastDayOfMonth) { // next month
-				if (month == 11) {
-					numYear = year + 1;
-					numMonth = 0;
-				} else {
-					numYear = year;
-					numMonth = month + 1;
-				}
-				tempCal.set(numYear, numMonth, 1);
-				numDay = i - lastDayOfMonth;
-			} else {
-				numYear = year;
-				numMonth = month;
-				numDay = i;
-			}
+            Calendar tempCal = Calendar.getInstance();
+            if (i <= 0) { // prev month
+                if (month == 0) {
+                    numYear = year - 1;
+                    numMonth = 11;
+                } else {
+                    numYear = year;
+                    numMonth = month - 1;
+                }
+                tempCal.set(numYear, numMonth, 1);
+                numDay = tempCal.getActualMaximum(Calendar.DAY_OF_MONTH) + i;
+            } else if (i > lastDayOfMonth) { // next month
+                if (month == 11) {
+                    numYear = year + 1;
+                    numMonth = 0;
+                } else {
+                    numYear = year;
+                    numMonth = month + 1;
+                }
+                tempCal.set(numYear, numMonth, 1);
+                numDay = i - lastDayOfMonth;
+            } else {
+                numYear = year;
+                numMonth = month;
+                numDay = i;
+            }
 
-			Day day = new Day(numYear, numMonth, numDay);
+            Day day = new Day(numYear, numMonth, numDay);
 
-			View view = mInflater.inflate(R.layout.layout_day, null);
-			TextView txtDay = (TextView) view.findViewById(R.id.txt_day);
-			ImageView imgEventTag = (ImageView) view.findViewById(R.id.img_event_tag);
+            View view = mInflater.inflate(R.layout.layout_day, null);
+            TextView txtDay = (TextView) view.findViewById(R.id.txt_day);
+            ImageView imgEventTag = (ImageView) view.findViewById(R.id.img_event_tag);
 
-			txtDay.setText(String.valueOf(day.getDay()));
-			if (day.getMonth() != mCal.get(Calendar.MONTH)) {
-				txtDay.setAlpha(0.3f);
-			}
+            txtDay.setText(String.valueOf(day.getDay()));
+            if (day.getMonth() != mCal.get(Calendar.MONTH)) {
+                txtDay.setAlpha(0.3f);
+            }
 
-			for (int j = 0; j < mEventList.size(); j++) {
-				Event event = mEventList.get(j);
-				if (day.getYear() == event.getYear()
-						&& day.getMonth() == event.getMonth()
-						&& day.getDay() == event.getDay()) {
-					imgEventTag.setVisibility(View.VISIBLE);
-				}
-			}
+            for (int j = 0; j < mEventList.size(); j++) {
+                Event event = mEventList.get(j);
+                if (day.getYear() == event.getYear()
+                        && day.getMonth() == event.getMonth()
+                        && day.getDay() == event.getDay()) {
+                    imgEventTag.setVisibility(View.VISIBLE);
+                }
+            }
 
-			mItemList.add(day);
-			mViewList.add(view);
-		}
+            mItemList.add(day);
+            mViewList.add(view);
+        }
     }
-	
+
 }

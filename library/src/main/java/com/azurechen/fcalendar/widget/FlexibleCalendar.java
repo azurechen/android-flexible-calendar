@@ -278,7 +278,7 @@ public class FlexibleCalendar extends UICalendar {
 
     public void prevMonth() {
         Calendar cal = mAdapter.getCalendar();
-        if(cal.get(Calendar.MONTH) == cal.getActualMinimum(Calendar.MONTH)) {
+        if (cal.get(Calendar.MONTH) == cal.getActualMinimum(Calendar.MONTH)) {
             cal.set((cal.get(Calendar.YEAR) - 1), cal.getActualMaximum(Calendar.MONTH), 1);
         } else {
             cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) - 1);
@@ -291,8 +291,8 @@ public class FlexibleCalendar extends UICalendar {
 
     public void nextMonth() {
         Calendar cal = mAdapter.getCalendar();
-        if(cal.get(Calendar.MONTH) == cal.getActualMaximum(Calendar.MONTH)) {
-            cal.set((cal.get(Calendar.YEAR) + 1), cal.getActualMinimum(Calendar.MONTH),1);
+        if (cal.get(Calendar.MONTH) == cal.getActualMaximum(Calendar.MONTH)) {
+            cal.set((cal.get(Calendar.YEAR) + 1), cal.getActualMinimum(Calendar.MONTH), 1);
         } else {
             cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
         }
@@ -307,7 +307,7 @@ public class FlexibleCalendar extends UICalendar {
             mCurrentWeekIndex = -1;
             prevMonth();
         } else {
-            mCurrentWeekIndex --;
+            mCurrentWeekIndex--;
             collapseTo(mCurrentWeekIndex);
         }
     }
@@ -317,7 +317,7 @@ public class FlexibleCalendar extends UICalendar {
             mCurrentWeekIndex = 0;
             nextMonth();
         } else {
-            mCurrentWeekIndex ++;
+            mCurrentWeekIndex++;
             collapseTo(mCurrentWeekIndex);
         }
     }
@@ -512,6 +512,7 @@ public class FlexibleCalendar extends UICalendar {
     public void setCalendarListener(CalendarListener listener) {
         mListener = listener;
     }
+
     public interface CalendarListener {
 
         // trigger when the day is selected programmatically or clicked by user.
