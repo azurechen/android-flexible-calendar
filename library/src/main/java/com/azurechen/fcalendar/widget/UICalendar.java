@@ -3,6 +3,7 @@ package com.azurechen.fcalendar.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,8 +71,10 @@ public abstract class UICalendar extends LinearLayout {
     private int mSelectedItemTextColor = Color.WHITE;
     private int mSelectedItemBackground = R.drawable.circle_black_solid_background;
 
-    private int mButtonLeftSrc = R.drawable.ic_navigate_before_black;
-    private int mButtonRightSrc = R.drawable.ic_navigate_next_black;
+    private Drawable mButtonLeftDrawable =
+            getResources().getDrawable(R.drawable.ic_navigate_before_black);
+    private Drawable mButtonRightDrawable =
+            getResources().getDrawable(R.drawable.ic_navigate_next_black);
 
     private Day mSelectedItem = null;
 
@@ -118,10 +121,40 @@ public abstract class UICalendar extends LinearLayout {
     }
 
     protected void setAttributes(TypedArray attrs) {
+        // set attributes by the values from XML
         setStyle(attrs.getInt(R.styleable.UICalendar_style, mStyle));
         setShowWeek(attrs.getBoolean(R.styleable.UICalendar_showWeek, mShowWeek));
         setFirstDayOfWeek(attrs.getInt(R.styleable.UICalendar_firstDayOfWeek, mFirstDayOfWeek));
         setState(attrs.getInt(R.styleable.UICalendar_state, mState));
+
+        setTextColor(attrs.getColor(R.styleable.UICalendar_textColor, mTextColor));
+        setPrimaryColor(attrs.getColor(R.styleable.UICalendar_primaryColor, mPrimaryColor));
+        setTodayItemTextColor(attrs.getColor(
+                R.styleable.UICalendar_todayItem_textColor, mTodayItemTextColor));
+        setTodayItemBackground(attrs.getInt(
+                R.styleable.UICalendar_todayItem_background, mTodayItemBackground));
+        setSelectedItemTextColor(attrs.getColor(
+                R.styleable.UICalendar_selectedItem_textColor, mSelectedItemTextColor));
+        setSelectedItemBackground(attrs.getInt(
+                R.styleable.UICalendar_selectedItem_background, mSelectedItemBackground));
+
+        Drawable buttonLeftDrawable =
+                attrs.getDrawable(R.styleable.UICalendar_buttonLeft_drawable);
+        if (buttonLeftDrawable != null) {
+            setButtonLeftDrawable(buttonLeftDrawable);
+        } else {
+            setButtonLeftDrawable(mButtonLeftDrawable);
+        }
+
+        Drawable buttonRightDrawable =
+                attrs.getDrawable(R.styleable.UICalendar_buttonRight_drawable);
+        if (buttonRightDrawable != null) {
+            setButtonRightDrawable(buttonRightDrawable);
+        } else {
+            setButtonRightDrawable(mButtonRightDrawable);
+        }
+
+        Day selectedItem   = null;
     }
 
     // getters and setters
@@ -139,15 +172,19 @@ public abstract class UICalendar extends LinearLayout {
             setTodayItemBackground(R.drawable.circle_black_stroke_background);
             setSelectedItemTextColor(Color.WHITE);
             setSelectedItemBackground(R.drawable.circle_black_solid_background);
-            setButtonLeftSrc(R.drawable.ic_navigate_before_black);
-            setButtonRightSrc(R.drawable.ic_navigate_next_black);
+            setButtonLeftDrawable(
+                    getResources().getDrawable(R.drawable.ic_navigate_before_black));
+            setButtonRightDrawable(
+                    getResources().getDrawable(R.drawable.ic_navigate_next_black));
         } else {
             setTextColor(Color.WHITE);
             setTodayItemTextColor(Color.WHITE);
             setTodayItemBackground(R.drawable.circle_white_stroke_background);
             setSelectedItemBackground(R.drawable.circle_white_solid_background);
-            setButtonLeftSrc(R.drawable.ic_navigate_before_white);
-            setButtonRightSrc(R.drawable.ic_navigate_next_white);
+            setButtonLeftDrawable(
+                    getResources().getDrawable(R.drawable.ic_navigate_before_white));
+            setButtonRightDrawable(
+                    getResources().getDrawable(R.drawable.ic_navigate_next_white));
 
             int color = 0;
             if (style == STYLE_PINK) {
@@ -265,24 +302,24 @@ public abstract class UICalendar extends LinearLayout {
         redraw();
     }
 
-    public int getButtonLeftSrc() {
-        return mButtonLeftSrc;
+    public Drawable getButtonLeftDrawable() {
+        return mButtonLeftDrawable;
     }
 
-    public void setButtonLeftSrc(int buttonLeftSrc) {
-        this.mButtonLeftSrc = buttonLeftSrc;
-        mBtnPrevMonth.setImageResource(buttonLeftSrc);
-        mBtnPrevWeek.setImageResource(buttonLeftSrc);
+    public void setButtonLeftDrawable(Drawable buttonLeftDrawable) {
+        this.mButtonLeftDrawable = buttonLeftDrawable;
+        mBtnPrevMonth.setImageDrawable(buttonLeftDrawable);
+        mBtnPrevWeek.setImageDrawable(buttonLeftDrawable);
     }
 
-    public int getButtonRightSrc() {
-        return mButtonRightSrc;
+    public Drawable getButtonRightDrawable() {
+        return mButtonRightDrawable;
     }
 
-    public void setButtonRightSrc(int buttonRightSrc) {
-        this.mButtonRightSrc = buttonRightSrc;
-        mBtnNextMonth.setImageResource(buttonRightSrc);
-        mBtnNextWeek.setImageResource(buttonRightSrc);
+    public void setButtonRightDrawable(Drawable buttonRightDrawable) {
+        this.mButtonRightDrawable = buttonRightDrawable;
+        mBtnNextMonth.setImageDrawable(buttonRightDrawable);
+        mBtnNextWeek.setImageDrawable(buttonRightDrawable);
     }
 
     public Day getSelectedItem() {

@@ -25,16 +25,16 @@
             <enum name="collapsed" value="1" />
         </attr>
 
-        <attr name="textColor" format="integer" />
-        <attr name="primaryColor" format="integer" />
+        <attr name="textColor" format="color" />
+        <attr name="primaryColor" format="color" />
 
-        <attr name="todayItem_textColor" format="integer" />
+        <attr name="todayItem_textColor" format="color" />
         <attr name="todayItem_background" format="integer" />
-        <attr name="selectedItem_textColor" format="integer" />
+        <attr name="selectedItem_textColor" format="color" />
         <attr name="selectedItem_background" format="integer" />
 
-        <attr name="buttonLeft_src" format="integer" />
-        <attr name="buttonRight_src" format="integer" />
+        <attr name="buttonLeft_drawable" format="integer" />
+        <attr name="buttonRight_drawable" format="integer" />
 
         <attr name="defaultSelectedItem" format="string" />
 
