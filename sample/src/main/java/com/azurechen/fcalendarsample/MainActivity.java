@@ -68,8 +68,8 @@ public class MainActivity extends Activity {
 
         // use methods
         viewCalendar.addEventTag(2015, 8, 10);
-        viewCalendar.addEventTag(2015, 8, 22);
-        viewCalendar.addEventTag(2015, 8, 27);
+        viewCalendar.addEventTag(2015, 8, 14);
+        viewCalendar.addEventTag(2015, 8, 23);
 
         viewCalendar.select(new Day(2015, 4, 22));
 

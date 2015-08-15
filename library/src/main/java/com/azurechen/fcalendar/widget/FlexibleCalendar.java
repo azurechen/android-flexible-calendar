@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -441,6 +442,7 @@ public class FlexibleCalendar extends UICalendar {
             final int topHeight = tempHeight;
 
             mScrollViewBody.getLayoutParams().height = targetHeight;
+            mScrollViewBody.requestLayout();
 
             mHandler.post(new Runnable() {
                 @Override
@@ -448,7 +450,7 @@ public class FlexibleCalendar extends UICalendar {
                     mScrollViewBody.smoothScrollTo(0, topHeight);
                 }
             });
-            mScrollViewBody.requestLayout();
+
 
             if (mListener != null) {
                 mListener.onWeekChange(mCurrentWeekIndex);
