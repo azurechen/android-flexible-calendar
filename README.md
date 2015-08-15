@@ -8,7 +8,7 @@ The most special feature is that you can toggle the calendar between collapsed o
 
 Demo
 -------
-![Demo](./demo.gif)
+<img src="./demo.gif" width = "360" alt="Demo" />
 
 Usage
 -----
