@@ -67,9 +67,11 @@ public abstract class UICalendar extends LinearLayout {
     private int mPrimaryColor = Color.WHITE;
 
     private int mTodayItemTextColor = Color.BLACK;
-    private int mTodayItemBackground = R.drawable.circle_black_stroke_background;
+    private Drawable mTodayItemBackgroundDrawable =
+            getResources().getDrawable(R.drawable.circle_black_stroke_background);
     private int mSelectedItemTextColor = Color.WHITE;
-    private int mSelectedItemBackground = R.drawable.circle_black_solid_background;
+    private Drawable mSelectedItemBackgroundDrawable =
+            getResources().getDrawable(R.drawable.circle_black_solid_background);
 
     private Drawable mButtonLeftDrawable =
             getResources().getDrawable(R.drawable.ic_navigate_before_black);
@@ -129,14 +131,26 @@ public abstract class UICalendar extends LinearLayout {
 
         setTextColor(attrs.getColor(R.styleable.UICalendar_textColor, mTextColor));
         setPrimaryColor(attrs.getColor(R.styleable.UICalendar_primaryColor, mPrimaryColor));
+
         setTodayItemTextColor(attrs.getColor(
                 R.styleable.UICalendar_todayItem_textColor, mTodayItemTextColor));
-        setTodayItemBackground(attrs.getInt(
-                R.styleable.UICalendar_todayItem_background, mTodayItemBackground));
+        Drawable todayItemBackgroundDrawable =
+                attrs.getDrawable(R.styleable.UICalendar_todayItem_background);
+        if (todayItemBackgroundDrawable != null) {
+            setTodayItemBackgroundDrawable(todayItemBackgroundDrawable);
+        } else {
+            setTodayItemBackgroundDrawable(mTodayItemBackgroundDrawable);
+        }
+
         setSelectedItemTextColor(attrs.getColor(
                 R.styleable.UICalendar_selectedItem_textColor, mSelectedItemTextColor));
-        setSelectedItemBackground(attrs.getInt(
-                R.styleable.UICalendar_selectedItem_background, mSelectedItemBackground));
+        Drawable selectedItemBackgroundDrawable =
+                attrs.getDrawable(R.styleable.UICalendar_selectedItem_background);
+        if (selectedItemBackgroundDrawable != null) {
+            setSelectedItemBackgroundDrawable(selectedItemBackgroundDrawable);
+        } else {
+            setSelectedItemBackgroundDrawable(mSelectedItemBackgroundDrawable);
+        }
 
         Drawable buttonLeftDrawable =
                 attrs.getDrawable(R.styleable.UICalendar_buttonLeft_drawable);
@@ -169,9 +183,11 @@ public abstract class UICalendar extends LinearLayout {
             setTextColor(Color.BLACK);
             setPrimaryColor(Color.WHITE);
             setTodayItemTextColor(Color.BLACK);
-            setTodayItemBackground(R.drawable.circle_black_stroke_background);
+            setTodayItemBackgroundDrawable(
+                    getResources().getDrawable(R.drawable.circle_black_stroke_background));
             setSelectedItemTextColor(Color.WHITE);
-            setSelectedItemBackground(R.drawable.circle_black_solid_background);
+            setSelectedItemBackgroundDrawable(
+                    getResources().getDrawable(R.drawable.circle_black_solid_background));
             setButtonLeftDrawable(
                     getResources().getDrawable(R.drawable.ic_navigate_before_black));
             setButtonRightDrawable(
@@ -179,8 +195,10 @@ public abstract class UICalendar extends LinearLayout {
         } else {
             setTextColor(Color.WHITE);
             setTodayItemTextColor(Color.WHITE);
-            setTodayItemBackground(R.drawable.circle_white_stroke_background);
-            setSelectedItemBackground(R.drawable.circle_white_solid_background);
+            setTodayItemBackgroundDrawable(
+                    getResources().getDrawable(R.drawable.circle_white_stroke_background));
+            setSelectedItemBackgroundDrawable(
+                    getResources().getDrawable(R.drawable.circle_white_solid_background));
             setButtonLeftDrawable(
                     getResources().getDrawable(R.drawable.ic_navigate_before_white));
             setButtonRightDrawable(
@@ -275,12 +293,12 @@ public abstract class UICalendar extends LinearLayout {
         redraw();
     }
 
-    public int getTodayItemBackground() {
-        return mTodayItemBackground;
+    public Drawable getTodayItemBackgroundDrawable() {
+        return mTodayItemBackgroundDrawable;
     }
 
-    public void setTodayItemBackground(int todayItemBackground) {
-        this.mTodayItemBackground = todayItemBackground;
+    public void setTodayItemBackgroundDrawable(Drawable todayItemBackgroundDrawable) {
+        this.mTodayItemBackgroundDrawable = todayItemBackgroundDrawable;
         redraw();
     }
 
@@ -293,12 +311,12 @@ public abstract class UICalendar extends LinearLayout {
         redraw();
     }
 
-    public int getSelectedItemBackground() {
-        return mSelectedItemBackground;
+    public Drawable getSelectedItemBackgroundDrawable() {
+        return mSelectedItemBackgroundDrawable;
     }
 
-    public void setSelectedItemBackground(int selectedItemBackground) {
-        this.mSelectedItemBackground = selectedItemBackground;
+    public void setSelectedItemBackgroundDrawable(Drawable selectedItemBackground) {
+        this.mSelectedItemBackgroundDrawable = selectedItemBackground;
         redraw();
     }
 

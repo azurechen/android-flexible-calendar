@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -132,13 +131,13 @@ public class FlexibleCalendar extends UICalendar {
 
                 // set today's item
                 if (isToady(day)) {
-                    txtDay.setBackgroundResource(getTodayItemBackground());
+                    txtDay.setBackgroundDrawable(getTodayItemBackgroundDrawable());
                     txtDay.setTextColor(getTodayItemTextColor());
                 }
 
                 // set the selected item
                 if (isSelectedDay(day)) {
-                    txtDay.setBackgroundResource(getSelectedItemBackground());
+                    txtDay.setBackgroundDrawable(getSelectedItemBackgroundDrawable());
                     txtDay.setTextColor(getSelectedItemTextColor());
                 }
             }
