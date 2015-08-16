@@ -516,19 +516,19 @@ public class FlexibleCalendar extends UICalendar {
 
     public interface CalendarListener {
 
-        // trigger when the day is selected programmatically or clicked by user.
+        // triggered when a day is selected programmatically or clicked by user.
         void onDaySelect();
 
-        // trigger only when the views of day on calendar are clicked by user.
+        // triggered only when the views of day on calendar are clicked by user.
         void onItemClick(View v);
 
-        // trigger when the data of calendar are updated by changing month or adding events.
+        // triggered when the data of calendar are updated by changing month or adding events.
         void onDataUpdate();
 
-        // trigger when the month are changed.
+        // triggered when the month are changed.
         void onMonthChange();
 
-        // trigger when the week position are changed.
+        // triggered when the week position are changed.
         void onWeekChange(int position);
     }
 }

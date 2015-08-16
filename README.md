@@ -99,5 +99,113 @@ And this is a sample about all attributes you can set:
 
 ###Methods
 
+```java
+// UI getters and setters
+int       getStyle()
+void      setStyle(int style)
+boolean   isShowWeek()
+void      setShowWeek(boolean showWeek)
+int       getFirstDayOfWeek()
+void      setFirstDayOfWeek(int firstDayOfWeek)
+int       getState()
+void      setState(int state)
+int       getTextColor()
+void      setTextColor(int textColor)
+int       getPrimaryColor()
+void      setPrimaryColor(int primaryColor)
+int       getTodayItemTextColor()
+void      setTodayItemTextColor(int todayItemTextColor)
+Drawable  getTodayItemBackgroundDrawable()
+void      setTodayItemBackgroundDrawable(Drawable todayItemBackgroundDrawable)
+int       getSelectedItemTextColor()
+void      setSelectedItemTextColor(int selectedItemTextColor)
+Drawable  getSelectedItemBackgroundDrawable()
+void      setSelectedItemBackgroundDrawable(Drawable selectedItemBackground)
+Drawable  getButtonLeftDrawable()
+void      setButtonLeftDrawable(Drawable buttonLeftDrawable)
+Drawable  getButtonRightDrawable()
+void      setButtonRightDrawable(Drawable buttonRightDrawable)
+//Day     getSelectedItem()
+//void    setSelectedItem(Day selectedItem)
+
+// Calendar control methods
+void      setAdapter(CalendarAdapter adapter)
+void      addEventTag(int numYear, int numMonth, int numDay)
+void      prevMonth()
+void      nextMonth()
+void      prevWeek()
+void      nextWeek()
+int       getYear()
+int       getMonth()
+Day       getSelectedDay()
+boolean   isSelectedDay(Day day)
+boolean   isToady(Day day)
+int       getSelectedItemPosition()
+int       getTodayItemPosition()
+void      collapse(int duration)
+void      expand(int duration)
+void      select(Day day)
+void      setStateWithUpdateUI(int state)
+void      setCalendarListener(CalendarListener listener)
+```
+
 ###Events
 
+There are some events will be triggered on specific state:
+
+```java
+// triggered when a day is selected programmatically or clicked by user.
+void onDaySelect();
+
+// triggered only when the views of day on calendar are clicked by user.
+void onItemClick(View v);
+
+// triggered when the data of calendar are updated by changing month or adding events.
+void onDataUpdate();
+
+// triggered when the month are changed.
+void onMonthChange();
+
+// triggered when the week position are changed.
+void onWeekChange(int position);
+```
+
+In order to listen these events, you should register a CalendarListener first, like the following example:
+
+```java
+viewCalendar.setCalendarListener(new FlexibleCalendar.CalendarListener() {
+    @Override
+    public void onDaySelect() {
+        Day day = viewCalendar.getSelectedDay();
+        Log.i(getClass().getName(), "Selected Day: "
+                + day.getYear() + "/" + (day.getMonth() + 1) + "/" + day.getDay());
+    }
+
+    @Override
+    public void onItemClick(View v) {
+        Day day = viewCalendar.getSelectedDay();
+        Log.i(getClass().getName(), "The Day of Clicked View: "
+                + day.getYear() + "/" + (day.getMonth() + 1) + "/" + day.getDay());
+    }
+
+    @Override
+    public void onDataUpdate() {
+        Log.i(getClass().getName(), "Data Updated");
+    }
+
+    @Override
+    public void onMonthChange() {
+        Log.i(getClass().getName(), "Month Changed"
+                + ". Current Year: " + viewCalendar.getYear()
+                + ", Current Month: " + (viewCalendar.getMonth() + 1));
+    }
+
+    @Override
+    public void onWeekChange(int position) {
+        Log.i(getClass().getName(), "Week Changed"
+                + ". Current Year: " + viewCalendar.getYear()
+                + ", Current Month: " + (viewCalendar.getMonth() + 1)
+                + ", Current Week position of Month: " + position);
+    }
+});
+```
